@@ -119,7 +119,7 @@ class CalcParser(Parser):
 
     #ESTATUTOS-------------------------------------------------
 
-    @_('estatutos1', 'estatutos2', 'estatutos3', 'estatutos4', 'estatutos5','estatutos6','estatutos7', 'estatutos8','')
+    @_('estatutos1', 'estatutos2', 'estatutos3', 'estatutos4', 'estatutos5','estatutos6','estatutos7', 'estatutos8','estatutos9','')
     def estatutos(self,p):
         pass
 
@@ -154,6 +154,9 @@ class CalcParser(Parser):
     @_('especiales ";" estatutos')
     def estatutos8(self,p):
         pass
+    @_('var ";" estatutos')
+    def estatutos9(self,p):
+        pass
 
     #funciones especiales --------------------------------------------
     @_('size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
@@ -175,7 +178,7 @@ class CalcParser(Parser):
     def decision(self,p):
         pass
     
-    @_('ELSE "{" decision2  "}"  ', '')
+    @_('ELSE "{" decision2 ";" "}"  ', '')
     def decision1(self,p):
         pass
 
