@@ -1,4 +1,101 @@
 from sly import Lexer, Parser
+from collection import defaultdict
+
+class cubo
+    cuboS = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
+
+    #suma
+    cuboS['int']['int']['+'] ='int'
+    cuboS['float']['float']['+'] ='float'
+    cuboS['int']['float']['+'] ='float'
+    cuboS['float']['int']['+'] ='float'
+
+    #resta
+    cuboS['int']['int']['-'] ='int'
+    cuboS['float']['float']['-'] ='float'
+    cuboS['int']['float']['-'] ='float'
+    cuboS['float']['int']['-'] ='float'
+
+    #dividir
+    cuboS['int']['int']['/'] ='float'
+    cuboS['float']['float']['/'] ='float'
+    cuboS['int']['float']['/'] ='float'
+    cuboS['float']['int']['/'] ='float'
+
+    #mul
+    cuboS['int']['int']['*'] ='int'
+    cuboS['float']['float']['*'] ='float'
+    cuboS['int']['float']['*'] ='float'
+    cuboS['float']['int']['*'] ='float'
+
+    #mayor
+    cuboS['int']['int']['>'] ='int'
+    cuboS['float']['float']['>'] ='int'
+    cuboS['int']['float']['>'] ='int'
+    cuboS['float']['int']['>'] ='int'
+    
+    #menor 
+    cuboS['int']['int']['<'] ='int'
+    cuboS['float']['float']['<'] ='int'
+    cuboS['int']['float']['<'] ='int'
+    cuboS['float']['int']['<'] ='int'
+
+    #menor  igual
+    cuboS['int']['int']['<='] ='int'
+    cuboS['float']['float']['<='] ='int'
+    cuboS['int']['float']['<='] ='int'
+    cuboS['float']['int']['<='] ='int'
+
+    #mayor  igual
+    cuboS['int']['int']['>='] ='int'
+    cuboS['float']['float']['>='] ='int'
+    cuboS['int']['float']['>='] ='int'
+    cuboS['float']['int']['>='] ='int'
+
+    #igual
+    cuboS['int']['int']['=='] ='int'
+    cuboS['float']['float']['=='] ='int'
+    cuboS['int']['float']['=='] ='int'
+    cuboS['float']['int']['=='] ='int'
+
+    #diferente
+    cuboS['int']['int']['<>'] ='int'
+    cuboS['float']['float']['<>'] ='int'
+    cuboS['int']['float']['<>'] ='int'
+    cuboS['float']['int']['<>'] ='int'
+
+    #asignar 
+    cuboS['int']['int']['='] ='int'
+    cuboS['float']['float']['='] ='float'
+    cuboS['char']['char']['='] ='char'
+
+#------------------------------------------------------------ tablas ----------------------------------
+class tablas:
+    tablaF = {}
+    tablaV = {}
+    # row va a ser el numero de linea empezando en 0 para irle sumando y desplazarse por el diccionario
+    def agregarF(name, tipo, value, tablaVars, parametros):
+        if name not in tablaF.keys(): 
+        tablaF{
+            'name':name,
+            'tipo':tipo,
+            'value':value,
+            'tablaVars': tablaV,
+            'parametros': parametros
+        }
+
+  
+    def agregarV(name, value, scope):
+        if name not in tablaV.keys(): 
+        tablaV{
+            'name':name,
+            'tipo':tipo,
+            'value':value,
+            'scope':scope
+        }
+
+
+#------------------------------------------------------------ tablas ----------------------------------
  
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
