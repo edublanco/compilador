@@ -1,7 +1,7 @@
 from sly import Lexer, Parser
-from collection import defaultdict
+from collections import defaultdict
 
-class cubo
+class cubo:
     cuboS = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
     #suma
@@ -73,53 +73,59 @@ class cubo
 class tablas:
     tablaF = {}
     tablaV = {}
-    # row va a ser el numero de linea empezando en 0 para irle sumando y desplazarse por el diccionario
+# row va a ser el numero de linea empezando en 0 para irle sumando y desplazarse por el diccionario
     def agregarF(name, tipo, value, tablaVars, parametros):
         if name not in tablaF.keys(): 
-        tablaF{
-            'name':name,
-            'tipo':tipo,
-            'value':value,
-            'tablaVars': tablaV,
-            'parametros': parametros
-        }
+            tablaF: (
+                {
+                'name':name,
+                'tipo':tipo,
+                'value':value,
+                'tablaVars': tablaV,
+                'parametros': parametros------------------------------------------------------------------------------------------------
+                }
+            ) 
+        
 
-  
+
     def agregarV(name, value, scope):
         if name not in tablaV.keys(): 
-        tablaV{
-            'name':name,
-            'tipo':tipo,
-            'value':value,
-            'scope':scope
-        }
+            tablaV: (
+                {
+                'name':name,
+                'tipo':tipo,
+                'value':value,
+                'scope':scope
+                }
+            )
 
 
 #------------------------------------------------------------ tablas ----------------------------------
  
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
-    tokens = {  CTEI, CTEF,  ID, STRING, MAS, MENOS, INT, 
+    tokens = {  CTEI, CTEF,  ID, CSTRING, MAS, MENOS, INT, 
                 ASIGNACION, IF, ELSE,
                 RELOP, MUL, DIV, PROGRAMA,
                 CHAR, FLOAT, VAR,
-                MODULO, VOID, RETURN, PALETA,FOR, WHILE,
+                MODULE, VOID, RETURN, PALETA,FOR, WHILE,
                 MAIN, TO, DO, WRITE, READ, SIZE, COLOR, CLEAR,
-                PENDOWN, PENUP, ARC, CIRCLE, POINT, LINE, THEN}
+                PENDOWN, PENUP, ARC, CIRCLE, POINT, LINE, THEN, LETRA}
 
     ignore = ' \t'
-    literals = { ';', ':', '(', ')', '{', '}',',' }
+    literals = { ';', ':', '(', ')', '{', '}',','}
 
     
     CTEF    = r'([0-9]+)(\.)([0-9]+)?'
     CTEI    = r'[0-9]+'
     ID      = r'[a-zA-Z]([a-zA-Z]|[0-9_])*'
-    STRING = r' [\"] ([a-zA-Z]*)+  [\"]'
+    CSTRING = r'\".*?\"'
+    LETRA  = r'\'[a-zA-Z]\''
     MENOS   = r'[\-]'
     MAS     = r'[\+]'
-    MUL  = r'[\*]'
+    MUL     = r'[\*]'
     DIV     = r'[\/]'
-    RELOP = r'(<>)|(==)|(<=)|(>=)|(<)|(>)'
+    RELOP   = r'(<>)|(==)|(<=)|(>=)|(<)|(>)'
     ASIGNACION  = r'='
     
 
@@ -131,7 +137,7 @@ class CalcLexer(Lexer):
     ID['programa'] = PROGRAMA
     ID['char'] = CHAR
     ID['var'] = VAR
-    ID['module'] = MODULO
+    ID['module'] = MODULE
     ID['void'] = VOID
     ID['return'] = RETURN
     ID['red'] = PALETA
@@ -178,11 +184,11 @@ class CalcParser(Parser):
     def programa(self, p):
         pass
 
-    @_('var programa2', 'programa3')
+    @_('var ";"  programa2 ', 'programa3')
     def programa2(self, p):
         pass
 
-    @_('function programa3', 'MAIN "{" estatutos "}" ')
+    @_('function ";" programa3 ', 'MAIN "{" estatutos "}" ')
     def programa3(self, p):
         pass
 
@@ -193,12 +199,12 @@ class CalcParser(Parser):
     
     #funvoid----------------------------------------------------
 
-    @_('VOID MODULO ID "(" fun4 ")" fun2 "{" fun3 "}" "}" ')
+    @_('VOID MODULE ID "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
         pass
 
     #fun-----------------------------------------------------------
-    @_('tipo MODULO ID "(" fun4 ")" fun2 "{" fun3 "}" return0 "}" ')
+    @_('tipo MODULE ID "(" fun4 ")" fun2 "{" fun3  return0 "}" ')
     def fun(self, p):
         pass
 
@@ -261,7 +267,7 @@ class CalcParser(Parser):
         pass
 
     #asignacion-----------------------------------------------
-    @_('ID ASIGNACION exp ', 'ID ASIGNACION ID ', 'ID ASIGNACION STRING ') # CHECAR CON STRINGS
+    @_('ID ASIGNACION exp ', 'ID ASIGNACION ID ', 'ID ASIGNACION CSTRING ','ID ASIGNACION LETRA') # CHECAR CON STRINGS
     def asignacion(self,p):
         pass
 
@@ -297,25 +303,25 @@ class CalcParser(Parser):
     def write(self,p):
         pass
 
-    @_('STRING write3 ', 'expresion write3')
+    @_(' CSTRING  write3 ', 'exp write3')
     def write2(self,p):
         pass
 
-    @_('"," STRING write3 ', '"," expresion write3', '')
+    @_('"," CSTRING write3 ', ' "," exp write3', '')
     def write3(self,p):
         pass
 
     #fors----------------------------------------------------
-    @_('FOR ID ASIGNACION exp TO exp DO "{" for1 ";" "}"')
+    @_('FOR ID ASIGNACION exp TO exp DO "{" for1 "}"')
     def for0(self,p):
         pass
 
-    @_('estatutos', '')
+    @_('estatutos ', '')
     def for1(self,p):
         pass
 
     #while----------------------------------------------------
-    @_('WHILE "(" expresion ")" DO "{" while1 ";" "}"')
+    @_('WHILE "(" expresion ")" DO "{" while1 "}"')
     def while0(self,p):
         pass
 
@@ -401,7 +407,7 @@ class CalcParser(Parser):
     def parametros(self,p):
         pass
     
-    @_('"," ID parametros2','')
+    @_('"," ID parametros2','"," tipo ID parametros2','')
     def parametros2(self,p):
         pass
 
@@ -416,11 +422,12 @@ class CalcParser(Parser):
         pass
 
     #VAR --------------------------------------------------
-    @_('VAR tipo ":" ID ";"','VAR tipo ":" ID var2 ";"')
+
+    @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )
     def var(self,p):
         pass
 
-    @_('"," ID var2','')
+    @_('"," ID var2' ,'')
     def var2(self,p):
         pass
 
