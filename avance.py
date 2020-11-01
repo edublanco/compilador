@@ -1,6 +1,8 @@
 from sly import Lexer, Parser
 from collections import defaultdict
 
+
+
 class cubo:
     cuboS = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
 
@@ -70,35 +72,23 @@ class cubo:
     cuboS['char']['char']['='] ='char'
 
 #------------------------------------------------------------ tablas ----------------------------------
-class tablas:
-    tablaF = {}
-    tablaV = {}
-# row va a ser el numero de linea empezando en 0 para irle sumando y desplazarse por el diccionario
-    def agregarF(name, tipo, value, tablaVars, parametros):
-        if name not in tablaF.keys(): 
-            tablaF: (
-                {
-                'name':name,
-                'tipo':tipo,
-                'value':value,
-                'tablaVars': tablaV,
-                'parametros': parametros------------------------------------------------------------------------------------------------
-                }
-            ) 
-        
+class  Tablas():
+    tablaF = {};
+    i = 0 
+    scope = "global"
+    tablaV = {};
+    j=0
 
 
-    def agregarV(name, value, scope):
-        if name not in tablaV.keys(): 
-            tablaV: (
-                {
-                'name':name,
-                'tipo':tipo,
-                'value':value,
-                'scope':scope
-                }
-            )
+    def agregarF(self, nombre, tipo, valor):  
+        self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor}
+        self.i += 1
+        print(self.tablaF)
 
+    def agregarV(self, nombre, tipo, valor):
+        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': self.scope}
+        self.j += 1
+        print(self.tablaV)
 
 #------------------------------------------------------------ tablas ----------------------------------
  
@@ -127,8 +117,6 @@ class CalcLexer(Lexer):
     DIV     = r'[\/]'
     RELOP   = r'(<>)|(==)|(<=)|(>=)|(<)|(>)'
     ASIGNACION  = r'='
-    
-
    
     ID['if'] = IF
     ID['else'] = ELSE
@@ -162,10 +150,7 @@ class CalcLexer(Lexer):
     ID['then'] = THEN
     ID['for'] = FOR
     ID['while'] = WHILE
-    
-    
-
-
+  
     #@_(r'\d+')
     #def CTEI(self, t):
     #    t.value = int(t.value)
@@ -174,7 +159,9 @@ class CalcLexer(Lexer):
 
 class CalcParser(Parser):
     # Get the token list from the lexer (required)
+
     tokens = CalcLexer.tokens
+    aux = 0 
 
     def __init__(self):
         self.names = { }
@@ -188,9 +175,18 @@ class CalcParser(Parser):
     def programa2(self, p):
         pass
 
-    @_('function ";" programa3 ', 'MAIN "{" estatutos "}" ')
+    @_('function ";" programa3 ', 'main ')
     def programa3(self, p):
         pass
+
+    @_( 'MAIN "{" estatutos "}" ')
+    def main(self, p):
+        tablas.scope = "global"
+        print("scope:")
+        print(tablas.scope)
+        pass
+
+
 
     #function---------------------------------------------------
     @_('fun', 'funVoid', 'size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
@@ -199,15 +195,24 @@ class CalcParser(Parser):
     
     #funvoid----------------------------------------------------
 
-    @_('VOID MODULE ID "(" fun4 ")" fun2 "{" fun3 "}" ')
+    @_('VOID MODULE ID  "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
+        tablas.scope = p.ID
+        tablas.agregarF(p.ID, "void", 0)
+        print("scope:")
+        print(tablas.scope)
         pass
 
     #fun-----------------------------------------------------------
-    @_('tipo MODULE ID "(" fun4 ")" fun2 "{" fun3  return0 "}" ')
+    @_('tipo MODULE  ID "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
+        aux = p.ID
+        #tablas.Scope = p.ID
+        tablas.agregarF(p.ID, p.tipo, 0) # hay que implementar el cubo semantico para que jale el return
+        print("scope:")
+        print(tablas.scope)
         pass
-
+    
     @_('var', '')
     def fun2(self, p):
         pass
@@ -281,7 +286,7 @@ class CalcParser(Parser):
     def decision(self,p):
         pass
     
-    @_('ELSE "{" decision2 ";" "}"  ', '')
+    @_('ELSE "{" decision2  "}"  ', '')
     def decision1(self,p):
         pass
 
@@ -383,11 +388,13 @@ class CalcParser(Parser):
     #RETURN------------------------------------------------
     @_('RETURN "(" exp ")" ')
     def return0(self,p):
+        
         pass
 
     #EXP---------------------------------------------------
     @_('termino exp2')
     def exp(self,p):
+        
         pass
 
     @_('MAS termino exp2','MENOS termino exp2', '')
@@ -423,8 +430,12 @@ class CalcParser(Parser):
 
     #VAR --------------------------------------------------
 
-    @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )
+    @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )  # checar que onda con tipo 
     def var(self,p):
+        tablas.agregarV(p.ID, p.tipo, 0)
+        auxTipo = p.tipo
+        print("scope:")
+        print(tablas.scope)
         pass
 
     @_('"," ID var2' ,'')
@@ -437,7 +448,7 @@ class CalcParser(Parser):
         pass
 
 if __name__ == '__main__':
- 
+    tablas = Tablas()
     lexer = CalcLexer()
     parser = CalcParser()
     while True:
