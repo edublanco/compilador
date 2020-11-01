@@ -19,7 +19,7 @@
 - modificacion de las tablas de variables
 - adicion del token letras 
 
-# Cuartp avance 
+# Cuarto avance 
 - correccion de errores en las tablas de variables
 - las tablas de variables ya guardan variables
 - las tablas de funciones ya guardan funciones
