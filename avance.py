@@ -73,21 +73,50 @@ class cubo:
 
 #------------------------------------------------------------ tablas ----------------------------------
 class  Tablas():
-    tablaF = {};
+    tablaF = {}
     i = 0 
     scope = "global"
-    tablaV = {};
+    tablaV = {}
     j=0
-
+    memoriaF = 0
+    memoriaV = 0
+    auxMemVarG = 0
 
     def agregarF(self, nombre, tipo, valor):  
-        self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor}
+        self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
         self.i += 1
+        #self.memoriaF += 1000;
         print(self.tablaF)
 
     def agregarV(self, nombre, tipo, valor):
-        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': self.scope}
+        
         self.j += 1
+        # checa si la memoria es global
+        # memoria de la variable en en 1, el aux es para cuando vuelva a global
+        if(tablas.scope == "global"  and self.memoriaV < 1000):
+            self.memoriaV += 1
+            self.auxMemVarG += 1
+        
+        # checa si el scope es otra vez global y le resta a la direccion de memoria de las variables
+        # la direccion de memoria de funciones para devolver la direccion memoria a global, y continua el conteo de memoria global
+        elif(self.scope == "global" and self.memoriaV >= 1000 ):
+            self.memoriaV -= self.memoriaF 
+            self.memoriaV = self.auxMemVarG + 1
+        # si sigue en el scope de la misma funcion nomas suma 1 a la direcion de memoria de las variables
+         # checa si la direccion memoria es del mismo scope, sino empieza 
+         # la direccion de memoria de las variables en en 1 + la direecion de memoria de la funcion
+        elif (self.scope != self.tablaV[self.j - 1]['scope']): 
+            #self.memoriaV += 1
+            self.memoriaV = self.memoriaF +1
+            #self.memoriaV += 1000
+        else:
+            self.memoriaV += 1
+        
+        print(self.memoriaV)
+        print(self.memoriaF)
+
+
+        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': self.scope, 'memoria' : self.memoriaV}
         print(self.tablaV)
 
 #------------------------------------------------------------ tablas ----------------------------------
@@ -179,39 +208,57 @@ class CalcParser(Parser):
     def programa3(self, p):
         pass
 
-    @_( 'MAIN "{" estatutos "}" ')
+    @_( 'MAIN pn1  "{" estatutos "}" ')
     def main(self, p):
         tablas.scope = "global"
         print("scope:")
         print(tablas.scope)
         pass
 
-
-
+    @_( '')
+    def pn1(self, p):
+        tablas.scope = "global"
+       
     #function---------------------------------------------------
     @_('fun', 'funVoid', 'size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
     def function(self, p):
         pass 
     
     #funvoid----------------------------------------------------
-
-    @_('VOID MODULE ID  "(" fun4 ")" fun2 "{" fun3 "}" ')
+    auxPn2 = ""
+    @_('VOID MODULE   pn2 "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
-        tablas.scope = p.ID
-        tablas.agregarF(p.ID, "void", 0)
+        #tablas.scope = p.ID
+        #self.auxPn2 = p.ID
+        tablas.agregarF(self.auxPn2, "void", 0)
         print("scope:")
         print(tablas.scope)
         pass
 
+    @_('ID')
+    def pn2(self, p):
+        self.auxPn2 = p.ID
+        tablas.scope = self.auxPn2
+        tablas.memoriaF += 1000
+        
+    
     #fun-----------------------------------------------------------
-    @_('tipo MODULE  ID "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
+    auxPn3 = ""
+    @_('tipo MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
-        aux = p.ID
+        #aux = p.ID
         #tablas.Scope = p.ID
-        tablas.agregarF(p.ID, p.tipo, 0) # hay que implementar el cubo semantico para que jale el return
+        tablas.agregarF(self.auxPn3,"pendiente", 0) # hay que implementar el cubo semantico para que jale el return
         print("scope:")
         print(tablas.scope)
         pass
+    
+    @_('ID')
+    def pn3(self, p):
+        self.auxPn3 = p.ID
+        tablas.scope = self.auxPn3
+        tablas.memoriaF += 1000
+        
     
     @_('var', '')
     def fun2(self, p):
@@ -432,8 +479,7 @@ class CalcParser(Parser):
 
     @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )  # checar que onda con tipo 
     def var(self,p):
-        tablas.agregarV(p.ID, p.tipo, 0)
-        auxTipo = p.tipo
+        tablas.agregarV(p.ID,"tipo", 0)
         print("scope:")
         print(tablas.scope)
         pass

@@ -27,6 +27,16 @@
 - falta ver como implementar bien el tipo 
 - falta integrar el cubo semantico
 
+# Quinto avance 
+- adicion de memoria en la tablas de funciones y variables
+- la memoria de las variables es ajusta conforme a la memoria de las funciones
+- se corrigio el scope en las tablas de variables 
+- checar la regla de while do
+- implementar que lea desde  un archivo de txt
+
+# Ejemplo del leguaje para ver las tablas:
+
+programa raul : var int : a; var float : b; void module funv (int ejem )var int: d{clear(); var int : c;};float module ejem2 (float r, int javier) var int : j {clear(); var int: e; return(23)}; int module ejem3(char w){var int :s; return(2)};main{ var int :h; var char : l;}
 
 # Ejemplo del leguaje:
 
