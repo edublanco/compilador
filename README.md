@@ -34,6 +34,13 @@
 - checar la regla de while do
 - implementar que lea desde  un archivo de txt
 
+# Sexto avance
+- la tabla registra los tipos de cada variable, parametro y funcion
+- se añadieron los parametros a la tabla de variables 
+- modificacion en la regla de parametros
+- ajuste en la funcion de agregarv
+- separacion del codigo en diferentes scripts 
+
 # Ejemplo del leguaje para ver las tablas:
 
 programa raul : var int : a; var float : b; void module funv (int ejem )var int: d{clear(); var int : c;};float module ejem2 (float r, int javier) var int : j {clear(); var int: e; return(23)}; int module ejem3(char w){var int :s; return(2)};main{ var int :h; var char : l;}

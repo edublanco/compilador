@@ -1,125 +1,9 @@
 from sly import Lexer, Parser
 from collections import defaultdict
+from TablaFV  import * 
+from CuboSemantico import cubo
 
 
-
-class cubo:
-    cuboS = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: None)))
-
-    #suma
-    cuboS['int']['int']['+'] ='int'
-    cuboS['float']['float']['+'] ='float'
-    cuboS['int']['float']['+'] ='float'
-    cuboS['float']['int']['+'] ='float'
-
-    #resta
-    cuboS['int']['int']['-'] ='int'
-    cuboS['float']['float']['-'] ='float'
-    cuboS['int']['float']['-'] ='float'
-    cuboS['float']['int']['-'] ='float'
-
-    #dividir
-    cuboS['int']['int']['/'] ='float'
-    cuboS['float']['float']['/'] ='float'
-    cuboS['int']['float']['/'] ='float'
-    cuboS['float']['int']['/'] ='float'
-
-    #mul
-    cuboS['int']['int']['*'] ='int'
-    cuboS['float']['float']['*'] ='float'
-    cuboS['int']['float']['*'] ='float'
-    cuboS['float']['int']['*'] ='float'
-
-    #mayor
-    cuboS['int']['int']['>'] ='int'
-    cuboS['float']['float']['>'] ='int'
-    cuboS['int']['float']['>'] ='int'
-    cuboS['float']['int']['>'] ='int'
-    
-    #menor 
-    cuboS['int']['int']['<'] ='int'
-    cuboS['float']['float']['<'] ='int'
-    cuboS['int']['float']['<'] ='int'
-    cuboS['float']['int']['<'] ='int'
-
-    #menor  igual
-    cuboS['int']['int']['<='] ='int'
-    cuboS['float']['float']['<='] ='int'
-    cuboS['int']['float']['<='] ='int'
-    cuboS['float']['int']['<='] ='int'
-
-    #mayor  igual
-    cuboS['int']['int']['>='] ='int'
-    cuboS['float']['float']['>='] ='int'
-    cuboS['int']['float']['>='] ='int'
-    cuboS['float']['int']['>='] ='int'
-
-    #igual
-    cuboS['int']['int']['=='] ='int'
-    cuboS['float']['float']['=='] ='int'
-    cuboS['int']['float']['=='] ='int'
-    cuboS['float']['int']['=='] ='int'
-
-    #diferente
-    cuboS['int']['int']['<>'] ='int'
-    cuboS['float']['float']['<>'] ='int'
-    cuboS['int']['float']['<>'] ='int'
-    cuboS['float']['int']['<>'] ='int'
-
-    #asignar 
-    cuboS['int']['int']['='] ='int'
-    cuboS['float']['float']['='] ='float'
-    cuboS['char']['char']['='] ='char'
-
-#------------------------------------------------------------ tablas ----------------------------------
-class  Tablas():
-    tablaF = {}
-    i = 0 
-    scope = "global"
-    tablaV = {}
-    j=0
-    memoriaF = 0
-    memoriaV = 0
-    auxMemVarG = 0
-
-    def agregarF(self, nombre, tipo, valor):  
-        self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
-        self.i += 1
-        #self.memoriaF += 1000;
-        print(self.tablaF)
-
-    def agregarV(self, nombre, tipo, valor):
-        
-        self.j += 1
-        # checa si la memoria es global
-        # memoria de la variable en en 1, el aux es para cuando vuelva a global
-        if(tablas.scope == "global"  and self.memoriaV < 1000):
-            self.memoriaV += 1
-            self.auxMemVarG += 1
-        
-        # checa si el scope es otra vez global y le resta a la direccion de memoria de las variables
-        # la direccion de memoria de funciones para devolver la direccion memoria a global, y continua el conteo de memoria global
-        elif(self.scope == "global" and self.memoriaV >= 1000 ):
-            self.memoriaV -= self.memoriaF 
-            self.memoriaV = self.auxMemVarG + 1
-        # si sigue en el scope de la misma funcion nomas suma 1 a la direcion de memoria de las variables
-         # checa si la direccion memoria es del mismo scope, sino empieza 
-         # la direccion de memoria de las variables en en 1 + la direecion de memoria de la funcion
-        elif (self.scope != self.tablaV[self.j - 1]['scope']): 
-            #self.memoriaV += 1
-            self.memoriaV = self.memoriaF +1
-            #self.memoriaV += 1000
-        else:
-            self.memoriaV += 1
-        
-        print(self.memoriaV)
-        print(self.memoriaF)
-
-
-        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': self.scope, 'memoria' : self.memoriaV}
-        print(self.tablaV)
-
-#------------------------------------------------------------ tablas ----------------------------------
  
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
@@ -188,7 +72,6 @@ class CalcLexer(Lexer):
 
 class CalcParser(Parser):
     # Get the token list from the lexer (required)
-
     tokens = CalcLexer.tokens
     aux = 0 
 
@@ -211,8 +94,6 @@ class CalcParser(Parser):
     @_( 'MAIN pn1  "{" estatutos "}" ')
     def main(self, p):
         tablas.scope = "global"
-        print("scope:")
-        print(tablas.scope)
         pass
 
     @_( '')
@@ -228,38 +109,35 @@ class CalcParser(Parser):
     auxPn2 = ""
     @_('VOID MODULE   pn2 "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
-        #tablas.scope = p.ID
-        #self.auxPn2 = p.ID
         tablas.agregarF(self.auxPn2, "void", 0)
-        print("scope:")
-        print(tablas.scope)
+        #print("scope:")
+        #print(tablas.scope)
         pass
 
     @_('ID')
     def pn2(self, p):
         self.auxPn2 = p.ID
         tablas.scope = self.auxPn2
-        tablas.memoriaF += 1000
+        tablas.memoriaV += 1000 
+        tablas.memoriaF += 1000 
         
     
     #fun-----------------------------------------------------------
     auxPn3 = ""
-    @_('tipo MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
+    auxTipo = ""
+    @_('tipoF  MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
-        #aux = p.ID
-        #tablas.Scope = p.ID
-        tablas.agregarF(self.auxPn3,"pendiente", 0) # hay que implementar el cubo semantico para que jale el return
-        print("scope:")
-        print(tablas.scope)
+        tablas.agregarF(self.auxPn3,self.auxTipo, 0) # hay que implementar el cubo semantico para que jale el return
+        #print(tablas.scope)
         pass
-    
+
     @_('ID')
     def pn3(self, p):
         self.auxPn3 = p.ID
         tablas.scope = self.auxPn3
-        tablas.memoriaF += 1000
-        
-    
+        tablas.memoriaV += 1000
+        tablas.memoriaF += 1000 
+
     @_('var', '')
     def fun2(self, p):
         pass
@@ -268,8 +146,12 @@ class CalcParser(Parser):
     def fun3(self, p):
         pass
 
-    @_('parametros', '')
+    @_('parametros fun5', '')
     def fun4(self, p):
+        pass
+
+    @_('"," parametros', '')
+    def fun5(self, p):
         pass
 
     #ESTATUTOS-------------------------------------------------
@@ -324,9 +206,15 @@ class CalcParser(Parser):
         pass
 
     #callvoid---------------------------------------------------
-    @_('ID "(" parametros ")" ')
+    @_('ID "(" parametros callVoid2 ")" ')
     def callVoid(self,p):
         pass
+
+    @_('"," parametros ', '') #<<<<---------------  checar
+    def callVoid2(self,p):
+        pass
+
+
 
     #decision---------------------------------------------------
     @_('IF "(" expresion ")" THEN "{" decision2  "}" decision1')
@@ -441,7 +329,6 @@ class CalcParser(Parser):
     #EXP---------------------------------------------------
     @_('termino exp2')
     def exp(self,p):
-        
         pass
 
     @_('MAS termino exp2','MENOS termino exp2', '')
@@ -457,13 +344,12 @@ class CalcParser(Parser):
         pass
 
     #PARAMETROS---------------------------------------
-    @_('tipo ID parametros2')
+    auxTipoP=''
+    @_('tipoP ID ')
     def parametros(self,p):
+        tablas.agregarV(p.ID,self.auxTipoP, 0)
         pass
     
-    @_('"," ID parametros2','"," tipo ID parametros2','')
-    def parametros2(self,p):
-        pass
 
     #factor --------------------------------------------------
     @_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
@@ -476,38 +362,66 @@ class CalcParser(Parser):
         pass
 
     #VAR --------------------------------------------------
-
+    auxTipoV =""
     @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )  # checar que onda con tipo 
     def var(self,p):
-        tablas.agregarV(p.ID,"tipo", 0)
-        print("scope:")
-        print(tablas.scope)
+        tablas.agregarV(p.ID,self.auxTipoV, 0)
         pass
 
-    @_('"," ID var2' ,'')
+    @_('"," pn6 var2' ,'')
     def var2(self,p):
+        pass
+
+    @_('ID')
+    def pn6(self,p):
+        tablas.agregarV(p.ID,self.auxTipoV, 0)
         pass
 
     #tipo -----------------------------------------------
     @_('INT',' FLOAT', 'CHAR')
     def tipo(self,p):
+        self.auxTipoV = p[0]
+        pass
+
+    @_('INT',' FLOAT', 'CHAR')
+    def tipoP(self,p):
+        self.auxTipoP = p[0]
+        pass
+
+    @_('INT',' FLOAT', 'CHAR')
+    def tipoF(self,p):
+        self.auxTipo = p[0]
         pass
 
 if __name__ == '__main__':
-    tablas = Tablas()
+    tablas = tablas()
     lexer = CalcLexer()
     parser = CalcParser()
     while True:
         try:
             text = input('---> ')
             parser.parse(lexer.tokenize(text))
-            #for tok in lexer.tokenize(text):
-            #    print(tok)
+            print("tabla de la memoria de funciones:")
+            print(tablas.tablaV)
+            count = 1
+            count2 = 0
+            print("tabla  de variables:")
+            for line in range(len(tablas.tablaV)):
+                print(count," : ", tablas.tablaV[count])
+                count =   count  +1
+
+            print("tabla funciones:")   
+            for line in range(len(tablas.tablaF)):
+                print(count2 +1," : ", tablas.tablaF[count2])
+                count2 =   count2 +1
+          
         except EOFError:
             break
+
+    
+    
         
-            
- #           parser.parse(lexer.tokenize(text))
+  
 
     
     
