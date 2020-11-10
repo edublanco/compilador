@@ -41,6 +41,12 @@
 - ajuste en la funcion de agregarv
 - separacion del codigo en diferentes scripts 
 
+# Septimo avance
+- Se implementaron los cuadruplos aritemeticos en el script de pruebas
+- Todavia tienen fallas de logica
+- ya se puede asignar valores a las variables
+- ya reconoce si se quiere asignar algo a una variable inexistente
+
 # Ejemplo del leguaje para ver las tablas:
 
 programa raul : var int : a; var float : b; void module funv (int ejem )var int: d{clear(); var int : c;};float module ejem2 (float r, int javier) var int : j {clear(); var int: e; return(23)}; int module ejem3(char w){var int :s; return(2)};main{ var int :h; var char : l;}

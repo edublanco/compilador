@@ -1,10 +1,10 @@
+
+
 from sly import Lexer, Parser
 from collections import defaultdict
 from TablaFV  import * 
 from CuboSemantico import cubo
 
-
- 
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
     tokens = {  CTEI, CTEF,  ID, CSTRING, MAS, MENOS, INT, 
@@ -18,7 +18,6 @@ class CalcLexer(Lexer):
     ignore = ' \t'
     literals = { ';', ':', '(', ')', '{', '}',','}
 
-    
     CTEF    = r'([0-9]+)(\.)([0-9]+)?'
     CTEI    = r'[0-9]+'
     ID      = r'[a-zA-Z]([a-zA-Z]|[0-9_])*'
@@ -30,7 +29,7 @@ class CalcLexer(Lexer):
     DIV     = r'[\/]'
     RELOP   = r'(<>)|(==)|(<=)|(>=)|(<)|(>)'
     ASIGNACION  = r'='
-   
+
     ID['if'] = IF
     ID['else'] = ELSE
     ID['int'] = INT
@@ -63,13 +62,7 @@ class CalcLexer(Lexer):
     ID['then'] = THEN
     ID['for'] = FOR
     ID['while'] = WHILE
-  
-    #@_(r'\d+')
-    #def CTEI(self, t):
-    #    t.value = int(t.value)
-    #    return t
     
-
 class CalcParser(Parser):
     # Get the token list from the lexer (required)
     tokens = CalcLexer.tokens
@@ -110,8 +103,6 @@ class CalcParser(Parser):
     @_('VOID MODULE   pn2 "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
         tablas.agregarF(self.auxPn2, "void", 0)
-        #print("scope:")
-        #print(tablas.scope)
         pass
 
     @_('ID')
@@ -121,14 +112,12 @@ class CalcParser(Parser):
         tablas.memoriaV += 1000 
         tablas.memoriaF += 1000 
         
-    
     #fun-----------------------------------------------------------
     auxPn3 = ""
     auxTipo = ""
-    @_('tipoF  MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
+    @_('tipo  MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
         tablas.agregarF(self.auxPn3,self.auxTipo, 0) # hay que implementar el cubo semantico para que jale el return
-        #print(tablas.scope)
         pass
 
     @_('ID')
@@ -155,7 +144,6 @@ class CalcParser(Parser):
         pass
 
     #ESTATUTOS-------------------------------------------------
-
     @_('estatutos1', 'estatutos2', 'estatutos3', 'estatutos4', 'estatutos5','estatutos6','estatutos7', 'estatutos8','estatutos9','')
     def estatutos(self,p):
         pass
@@ -167,6 +155,7 @@ class CalcParser(Parser):
     @_('callVoid ";" estatutos')
     def estatutos2(self,p):
         pass
+
 
     @_('read ";" estatutos')
     def estatutos3(self,p):
@@ -200,10 +189,23 @@ class CalcParser(Parser):
     def especiales(self,p):
         pass
 
+   
     #asignacion-----------------------------------------------
-    @_('ID ASIGNACION exp ', 'ID ASIGNACION ID ', 'ID ASIGNACION CSTRING ','ID ASIGNACION LETRA') # CHECAR CON STRINGS
+    auxValor = ''
+    @_('ID ASIGNACION exp ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
     def asignacion(self,p):
+        if(tablas.checa(p[0])):
+            print("la variable  esta")
+            tablas.agregarValor(p[0], self.auxValor)
+        else: 
+            print("la variable no esta")
         pass
+    
+    @_('ID ', 'CSTRING ','LETRA') # CHECAR CON STRINGS
+    def asignacion2(self,p):
+        self.auxValor = p[0]
+
+
 
     #callvoid---------------------------------------------------
     @_('ID "(" parametros callVoid2 ")" ')
@@ -213,8 +215,6 @@ class CalcParser(Parser):
     @_('"," parametros ', '') #<<<<---------------  checar
     def callVoid2(self,p):
         pass
-
-
 
     #decision---------------------------------------------------
     @_('IF "(" expresion ")" THEN "{" decision2  "}" decision1')
@@ -283,9 +283,8 @@ class CalcParser(Parser):
     @_('PENDOWN "(" ")"')
     def pendown(self,p):
         pass
-     
+    
     #PENUP----------------------------------------------
-
     @_('PENUP "(" ")"')
     def penup(self,p):
         pass
@@ -322,8 +321,7 @@ class CalcParser(Parser):
 
     #RETURN------------------------------------------------
     @_('RETURN "(" exp ")" ')
-    def return0(self,p):
-        
+    def return0(self,p):    
         pass
 
     #EXP---------------------------------------------------
@@ -333,6 +331,8 @@ class CalcParser(Parser):
 
     @_('MAS termino exp2','MENOS termino exp2', '')
     def exp2(self,p):
+        #si el anterior no es  *, /, + , * guardar en el stack, si si es hacer la operacion 
+        #y guardar el resultado 
         pass
     #TERMINO-------------------------------------------
     @_('factor termino2')
@@ -341,31 +341,35 @@ class CalcParser(Parser):
     
     @_('MUL factor termino2', 'DIV factor termino2','')
     def termino2(self,p):
+        #si el anterior no es  * o / guardar en el stack, si si es hacer la operacion 
+        #y guardar el resultado 
         pass
 
     #PARAMETROS---------------------------------------
-    auxTipoP=''
-    @_('tipoP ID ')
+    #auxTipoP=''
+    @_('tipo ID ')
     def parametros(self,p):
-        tablas.agregarV(p.ID,self.auxTipoP, 0)
+        tablas.agregarV(p.ID,self.auxTipo, 0)
         pass
-    
 
     #factor --------------------------------------------------
-    @_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
+    #@_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
+    @_('"(" expresion ")" ', 'varnum')
     def factor(self,p):
         pass
 
     #VARNUM-------------------------------------------------
     @_('ID', 'CTEF', 'CTEI')
     def varnum(self,p):
+        self.auxValor = p[0]
+        # guardamos en stack
         pass
 
     #VAR --------------------------------------------------
-    auxTipoV =""
+    #auxTipoV =""
     @_('VAR tipo ":" ID ','VAR tipo ":" ID var2 ' )  # checar que onda con tipo 
     def var(self,p):
-        tablas.agregarV(p.ID,self.auxTipoV, 0)
+        tablas.agregarV(p.ID,self.auxTipo, 0)
         pass
 
     @_('"," pn6 var2' ,'')
@@ -374,29 +378,25 @@ class CalcParser(Parser):
 
     @_('ID')
     def pn6(self,p):
-        tablas.agregarV(p.ID,self.auxTipoV, 0)
+        tablas.agregarV(p.ID,self.auxTipo, 0)
         pass
 
     #tipo -----------------------------------------------
+
     @_('INT',' FLOAT', 'CHAR')
     def tipo(self,p):
-        self.auxTipoV = p[0]
-        pass
-
-    @_('INT',' FLOAT', 'CHAR')
-    def tipoP(self,p):
-        self.auxTipoP = p[0]
-        pass
-
-    @_('INT',' FLOAT', 'CHAR')
-    def tipoF(self,p):
         self.auxTipo = p[0]
         pass
 
 if __name__ == '__main__':
+
     tablas = tablas()
     lexer = CalcLexer()
     parser = CalcParser()
+
+    
+
+
     while True:
         try:
             text = input('---> ')
@@ -408,7 +408,7 @@ if __name__ == '__main__':
             print("tabla  de variables:")
             for line in range(len(tablas.tablaV)):
                 print(count," : ", tablas.tablaV[count])
-                count =   count  +1
+                count =   count  + 1
 
             print("tabla funciones:")   
             for line in range(len(tablas.tablaF)):
@@ -417,6 +417,15 @@ if __name__ == '__main__':
           
         except EOFError:
             break
+
+    
+    
+        
+  
+
+    
+    
+
 
     
     

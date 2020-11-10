@@ -19,6 +19,26 @@ class  tablas():
         #print("memoriaf: ", self.memoriaF )
         #print("memoriaV: ", self.memoriaV )
 
+    def checa(self,nombre):
+        w = 1
+        while(w <= len(self.tablaV)):
+            if (self.tablaV[w]['name'] == nombre):
+                return True
+            #else:
+            #    return False
+            w +=1
+
+    def agregarValor(self,nombre, valor):
+        w = 1
+        while(w <= len(self.tablaV)):
+            if (self.tablaV[w]['name'] == nombre):
+                print("valor: ", valor)
+                self.tablaV[w]['value'] = valor
+                print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            #else:
+            #    return False
+            w +=1
+
     def agregarV(self, nombre, tipo, valor):
         
         self.j += 1
