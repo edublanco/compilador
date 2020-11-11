@@ -14,29 +14,22 @@ class  tablas():
     def agregarF(self, nombre, tipo, valor):  
         self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
         self.i += 1
-        #self.memoriaF += 1000;#<-------------------------------------
-        #print(self.tablaF)
-        #print("memoriaf: ", self.memoriaF )
-        #print("memoriaV: ", self.memoriaV )
+        
 
     def checa(self,nombre):
         w = 1
         while(w <= len(self.tablaV)):
             if (self.tablaV[w]['name'] == nombre):
                 return True
-            #else:
-            #    return False
             w +=1
 
     def agregarValor(self,nombre, valor):
         w = 1
         while(w <= len(self.tablaV)):
             if (self.tablaV[w]['name'] == nombre):
-                print("valor: ", valor)
+                #print("valor: ", valor)
                 self.tablaV[w]['value'] = valor
-                print("y su valor es: ",self.tablaV[w]['value'])# : valor
-            #else:
-            #    return False
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
             w +=1
 
     def agregarV(self, nombre, tipo, valor):

@@ -3,6 +3,7 @@
 from sly import Lexer, Parser
 from collections import defaultdict
 from TablaFV  import * 
+from Cuadruplos  import *
 from CuboSemantico import cubo
 
 class CalcLexer(Lexer):
@@ -67,6 +68,7 @@ class CalcParser(Parser):
     # Get the token list from the lexer (required)
     tokens = CalcLexer.tokens
     aux = 0 
+    cuad = cuad()
 
     def __init__(self):
         self.names = { }
@@ -192,15 +194,17 @@ class CalcParser(Parser):
    
     #asignacion-----------------------------------------------
     auxValor = ''
-    @_('ID ASIGNACION exp ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
+    @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
     def asignacion(self,p):
         if(tablas.checa(p[0])):
-            print("la variable  esta")
-            tablas.agregarValor(p[0], self.auxValor)
+            tablas.agregarValor(p[0], cuad.resultado)
+            
         else: 
             print("la variable no esta")
         pass
     
+    
+
     @_('ID ', 'CSTRING ','LETRA') # CHECAR CON STRINGS
     def asignacion2(self,p):
         self.auxValor = p[0]
@@ -243,16 +247,17 @@ class CalcParser(Parser):
     def write(self,p):
         pass
 
-    @_(' CSTRING  write3 ', 'exp write3')
+    @_(' CSTRING  write3 ', 'exp end write3')
     def write2(self,p):
+        
         pass
 
-    @_('"," CSTRING write3 ', ' "," exp write3', '')
+    @_('"," CSTRING write3 ', ' "," exp end write3', '')
     def write3(self,p):
         pass
 
     #fors----------------------------------------------------
-    @_('FOR ID ASIGNACION exp TO exp DO "{" for1 "}"')
+    @_('FOR ID ASIGNACION exp end TO exp end DO "{" for1 "}"')
     def for0(self,p):
         pass
 
@@ -290,60 +295,83 @@ class CalcParser(Parser):
         pass
 
     #ARC----------------------------------------------------
-    @_('ARC "(" exp "," exp ")"')
+    @_('ARC "(" exp end "," exp end ")"')
     def arc(self,p):
         pass
 
     #CIRCLE-------------------------------------------------
-    @_('CIRCLE "(" exp ")"')
+    @_('CIRCLE "(" exp end ")"')
     def circle(self,p):
         pass
 
     #POINT---------------------------------------------------
-    @_('POINT "(" exp "," exp ")"')
+    @_('POINT "(" exp end "," exp end ")"')
     def point(self,p):
         pass
 
     #SIZE-------------------------------------------------
-    @_('SIZE "(" exp ")"')
+    @_('SIZE "(" exp end ")"')
     def size(self,p):
         pass
 
     #line--------------------------------------------------
-    @_('LINE "(" exp "," exp ")"')
+    @_('LINE "(" exp end "," exp end  ")"')
     def line(self,p):
         pass
 
     #EXPRESION ---------------------------------------------
-    @_('exp RELOP exp')
+    @_('exp end RELOP exp end')
     def expresion(self,p):
         pass
 
     #RETURN------------------------------------------------
-    @_('RETURN "(" exp ")" ')
+    @_('RETURN "(" exp end ")" ')
     def return0(self,p):    
         pass
 
     #EXP---------------------------------------------------
-    @_('termino exp2')
+    @_('termino exp2 ')
     def exp(self,p):
+        
         pass
 
-    @_('MAS termino exp2','MENOS termino exp2', '')
+    @_('')
+    def end(self,p):
+        cuad.agregaOp('end')
+        pass
+
+    @_('exp3 termino exp2','exp4 termino exp2', '')
     def exp2(self,p):
         #si el anterior no es  *, /, + , * guardar en el stack, si si es hacer la operacion 
         #y guardar el resultado 
         pass
+
+    @_('MAS')
+    def exp3(self,p):
+        cuad.agregaOp("+")
+
+    @_('MENOS')
+    def exp4(self,p):
+        cuad.agregaOp("-")
+
     #TERMINO-------------------------------------------
     @_('factor termino2')
     def termino(self,p):
         pass
     
-    @_('MUL factor termino2', 'DIV factor termino2','')
+    @_('termino3 factor termino2', 'termino4 factor termino2','')
     def termino2(self,p):
         #si el anterior no es  * o / guardar en el stack, si si es hacer la operacion 
         #y guardar el resultado 
         pass
+
+    @_('MUL')
+    def termino3(self,p):
+        cuad.agregaOp("*")
+
+    @_('DIV')
+    def termino4(self,p):
+        cuad.agregaOp("/")
 
     #PARAMETROS---------------------------------------
     #auxTipoP=''
@@ -354,14 +382,23 @@ class CalcParser(Parser):
 
     #factor --------------------------------------------------
     #@_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
-    @_('"(" expresion ")" ', 'varnum')
+    @_('factor2 exp factor3', 'varnum', '')
     def factor(self,p):
         pass
+
+    @_('"("')
+    def factor2(self,p):
+        cuad.agregaOp("(")
+    
+    @_(' ")" ')
+    def factor3(self,p):
+        cuad.agregaOp(")")
 
     #VARNUM-------------------------------------------------
     @_('ID', 'CTEF', 'CTEI')
     def varnum(self,p):
         self.auxValor = p[0]
+        cuad.agregaCons(p[0])
         # guardamos en stack
         pass
 
@@ -393,6 +430,7 @@ if __name__ == '__main__':
     tablas = tablas()
     lexer = CalcLexer()
     parser = CalcParser()
+    cuad = cuad()
 
     
 
@@ -401,8 +439,8 @@ if __name__ == '__main__':
         try:
             text = input('---> ')
             parser.parse(lexer.tokenize(text))
-            print("tabla de la memoria de funciones:")
-            print(tablas.tablaV)
+            
+            
             count = 1
             count2 = 0
             print("tabla  de variables:")
