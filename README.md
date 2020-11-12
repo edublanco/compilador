@@ -52,6 +52,13 @@
 - Correccion de errores 
 - funcionalidad de asigancion 
 
+# Noveno avance 
+- Se implementaron los cuadruplos condicionales 
+- Se inlcuyo las expresiones en los cuadruplos asi como los resultados
+- Correccion de errores 
+- se agrego la funcion write a lso cuadruplos
+intentar con el siguiente codigo:
+programa m :  var int: a; main{  if(a < 2)then {a =2-8;    if(a<2)then{ a = 9;} else {write("w");};    a = 9 *(2+5);}      ;  }
 
 # Ejemplo del leguaje para ver las tablas:
 

@@ -32,6 +32,17 @@ class  tablas():
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
             w +=1
 
+    def extraerValor(self, nombre):
+        w = 1
+        auxTipo =''
+        while(w <= len(self.tablaV)):
+            if (self.tablaV[w]['name'] == nombre):
+                #print("valor: ", valor)
+                auxTipo = self.tablaV[w]['value'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+        return auxTipo
+
     def agregarV(self, nombre, tipo, valor):
         
         self.j += 1

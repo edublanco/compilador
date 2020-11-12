@@ -193,7 +193,8 @@ class CalcParser(Parser):
 
    
     #asignacion-----------------------------------------------
-    auxValor = ''
+    #auxValor = '' # es para asignar el id, char o str----- falta prpgramar
+    #--------------!!!!!!-------------------------------
     @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
     def asignacion(self,p):
         if(tablas.checa(p[0])):
@@ -203,13 +204,9 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
     
-    
-
-    @_('ID ', 'CSTRING ','LETRA') # CHECAR CON STRINGS
+    @_('CSTRING ','LETRA') # CHECAR CON STRINGS
     def asignacion2(self,p):
-        self.auxValor = p[0]
-
-
+        cuad.resultado = p[0]
 
     #callvoid---------------------------------------------------
     @_('ID "(" parametros callVoid2 ")" ')
@@ -395,11 +392,28 @@ class CalcParser(Parser):
         cuad.agregaOp(")")
 
     #VARNUM-------------------------------------------------
-    @_('ID', 'CTEF', 'CTEI')
+    @_('varnum2', 'varnum3')
     def varnum(self,p):
-        self.auxValor = p[0]
+        pass
+
+    @_('ID')
+    def varnum2(self,p):
+        if(tablas.checa(p[0])):
+            auxT = tablas.extraerValor(p[0])
+            #self.auxValor = auxT
+            cuad.agregaCons(auxT)
+            
+        else: 
+            print("la variable no esta")
+        pass
+        
+
+       
+
+    @_('CTEF', 'CTEI')
+    def varnum3(self,p):
+        #self.auxValor = p[0]
         cuad.agregaCons(p[0])
-        # guardamos en stack
         pass
 
     #VAR --------------------------------------------------

@@ -169,6 +169,7 @@ class CalcParser(Parser):
 
     @_('decision ";" estatutos')
     def estatutos5(self,p):
+        #cuad.agregarCuadIf('gotoFC')
         pass
 
     @_('for0 ";" estatutos')
@@ -193,23 +194,21 @@ class CalcParser(Parser):
 
    
     #asignacion-----------------------------------------------
-    auxValor = ''
+    #auxValor = '' # es para asignar el id, char o str----- falta prpgramar
+    #--------------!!!!!!-------------------------------
     @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
     def asignacion(self,p):
         if(tablas.checa(p[0])):
             tablas.agregarValor(p[0], cuad.resultado)
+            cuad.agregarCuadAsign(p[0],cuad.resultado, '=') 
             
         else: 
             print("la variable no esta")
         pass
     
-    
-
-    @_('ID ', 'CSTRING ','LETRA') # CHECAR CON STRINGS
+    @_('CSTRING ','LETRA') # CHECAR CON STRINGS
     def asignacion2(self,p):
-        self.auxValor = p[0]
-
-
+        cuad.resultado = p[0]
 
     #callvoid---------------------------------------------------
     @_('ID "(" parametros callVoid2 ")" ')
@@ -221,18 +220,50 @@ class CalcParser(Parser):
         pass
 
     #decision---------------------------------------------------
-    @_('IF "(" expresion ")" THEN "{" decision2  "}" decision1')
+    
+    @_('IF "(" expresion ")" THEN gotoF decision2 "}"  auxEl   ')
     def decision(self,p):
         pass
+
+    @_('decision1','gotoFC')
+    def auxEl(self,p):
+        #cuad.agregarCuadIf('gotoF')
+        pass
+
+    @_('"{"')
+    def gotoF(self,p):
+        cuad.agregarCuadIf('gotoF')
+        pass
     
-    @_('ELSE "{" decision2  "}"  ', '')
+    @_(' ')
+    def gotoFC(self,p):
+        cuad.agregarCuadIf('gotoFC')
+        pass
+    
+    @_('gotoFC2 ELSE   gotoT  decision2 "}" gotoTC  ')
     def decision1(self,p):
+        pass
+
+    @_('')
+    def gotoFC2(self,p):
+        cuad.agregarCuadIf('gotoFC2')
+        pass
+
+    @_('"{"')
+    def gotoT(self,p):
+        cuad.agregarCuadIf('gotoT')
+        pass
+
+    @_('')
+    def gotoTC(self,p):
+        cuad.agregarCuadIf('gotoTC')
         pass
 
     @_('estatutos','')
     def decision2(self,p):
         pass
-  
+    
+    
     #read -------------------------------------------------------
     @_('READ "(" ID read2 ")" ')
     def read(self,p):
@@ -245,16 +276,24 @@ class CalcParser(Parser):
     #write-------------------------------------------------------
     @_('WRITE "(" write2 ")" ')
     def write(self,p):
+        cuad.agregarCuadF(cuad.resultado, 'write')
         pass
 
-    @_(' CSTRING  write3 ', 'exp end write3')
+    @_(' write4  write3 ', 'exp end write3')
     def write2(self,p):
         
         pass
 
-    @_('"," CSTRING write3 ', ' "," exp end write3', '')
+    @_('"," write4 write3 ', ' "," exp end write3', '')
     def write3(self,p):
         pass
+
+    @_(' CSTRING ')
+    def write4(self,p):
+        cuad.resultado = p[0]
+        pass
+
+
 
     #fors----------------------------------------------------
     @_('FOR ID ASIGNACION exp end TO exp end DO "{" for1 "}"')
@@ -320,9 +359,22 @@ class CalcParser(Parser):
         pass
 
     #EXPRESION ---------------------------------------------
-    @_('exp end RELOP exp end')
+    primeraExp = 0
+    segundaExp = 0
+    @_('exp end expresion1 RELOP exp end expresion2')
     def expresion(self,p):
+        cuad.agregarCuadExpresion( self.primeraExp,self.segundaExp, p.RELOP)
         pass
+
+    @_('')
+    def expresion1(self,p):
+        self.primeraExp = cuad.resultado
+        pass
+    @_('')
+    def expresion2(self,p):
+        self.segundaExp = cuad.resultado
+        pass
+
 
     #RETURN------------------------------------------------
     @_('RETURN "(" exp end ")" ')
@@ -395,11 +447,28 @@ class CalcParser(Parser):
         cuad.agregaOp(")")
 
     #VARNUM-------------------------------------------------
-    @_('ID', 'CTEF', 'CTEI')
+    @_('varnum2', 'varnum3')
     def varnum(self,p):
-        self.auxValor = p[0]
+        pass
+
+    @_('ID')
+    def varnum2(self,p):
+        if(tablas.checa(p[0])):
+            auxT = tablas.extraerValor(p[0])
+            #self.auxValor = auxT
+            cuad.agregaCons(auxT)
+            
+        else: 
+            print("la variable no esta")
+        pass
+        
+
+       
+
+    @_('CTEF', 'CTEI')
+    def varnum3(self,p):
+        #self.auxValor = p[0]
         cuad.agregaCons(p[0])
-        # guardamos en stack
         pass
 
     #VAR --------------------------------------------------
@@ -443,6 +512,7 @@ if __name__ == '__main__':
             
             count = 1
             count2 = 0
+            count3 = 1
             print("tabla  de variables:")
             for line in range(len(tablas.tablaV)):
                 print(count," : ", tablas.tablaV[count])
@@ -452,6 +522,10 @@ if __name__ == '__main__':
             for line in range(len(tablas.tablaF)):
                 print(count2 +1," : ", tablas.tablaF[count2])
                 count2 =   count2 +1
+            print("tabla cuadruplos:")   
+            for line in range(len(cuad.tablaQ)):
+                print(count3 +1," : ", cuad.tablaQ[count3])
+                count3 =   count3 +1
           
         except EOFError:
             break

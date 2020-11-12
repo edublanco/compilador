@@ -87,8 +87,7 @@ class  cuad():
         pass
 
     def agregarCuad(self, opIzq, opDer, operando):
-        #-----------------IMPORTANTE!!!!------------------
-        #             checar lo de los ints
+            
         opeNuevo = 0
         if(isinstance(opIzq, str)):
             try:
@@ -97,6 +96,8 @@ class  cuad():
             except:
                 float(opIzq)
                 opIzq = float(opIzq)
+            else:
+                pass
 
         if(isinstance(opDer, str)):
             try:
@@ -117,6 +118,7 @@ class  cuad():
         elif (operando == 'end'):
             opeNuevo = opDer
         
+        
         self.tablaQ[self.i] = {
             'operando': operando ,
             'opIzq': opIzq, 
@@ -130,12 +132,142 @@ class  cuad():
             self.i += 1
         elif(operando == 'end'):
             self.resultado = opeNuevo
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("resultado: ", opeNuevo)
+            #print("tabla operadores final",self.sOperadores)
+            #print("tabla temporales final",self.sTemp)
+            #self.i = 1
+            #self.tablaQ.clear()
+
+    def agregarCuadAsign(self, opIzq, opDer, operando):
+        opeNuevo = 0
+        opeNuevo = opDer
+
+        self.tablaQ[self.i] = {
+            'operando': operando ,
+            'opIzq': opIzq, 
+            'opDer': opDer, 
+            'opNuevo': opeNuevo    
+            }
+
+    
+        self.resultado = opeNuevo
+        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        self.i += 1
+
+    def agregarCuadF(self, exp, funcion):
+        opeNuevo = 0
+        opeNuevo = exp
+
+        self.tablaQ[self.i] = {
+            'operando': funcion ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': exp    
+            }
+
+    
+        self.resultado = opeNuevo
+        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        self.i += 1
+       
+    def agregarCuadExpresion(self, exp1,exp2, operando):
+        opeNuevo = 0
+        #opeNuevo = exp
+
+        if(operando == '<'):
+            if(exp1 < exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+        elif(operando == '>'):
+            if(exp1 > exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+        elif(operando == '<>'):
+            if(exp1 != exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+        elif(operando == '<='):
+            if(exp1 <= exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+        elif(operando == '>='):
+            if(exp1 >= exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+        elif(operando == '=='):
+            if(exp1 == exp2):
+                opeNuevo = 1
+            else:
+                opeNuevo = 0
+
+        self.tablaQ[self.i] = {
+            'operando': operando,
+            'opIzq': exp1, 
+            'opDer': exp2, 
+            'opNuevo': opeNuevo    
+            }
+
+    
+        self.resultado = opeNuevo
+        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        self.i += 1
+
+    sJumps = []
+    dire = 0
+    def agregarCuadIf(self,  goto):
+        operando = goto
+        
+        if(operando == 'gotoF'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            self.sJumps.append(self.i)
             print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
-            print("resultado: ", opeNuevo)
-            print("tabla operadores final",self.sOperadores)
-            print("tabla temporales final",self.sTemp)
-            self.i = 1
-            self.tablaQ.clear()
+            self.i += 1
+        
+  
+        elif(operando == 'gotoFC'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i  +1
+            pass
+        
+        elif(operando == 'gotoFC2'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i  +2
+            pass
+
+        elif(operando == 'gotoT'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            #false = self.sIfs.pop
+            #false = self.sIf.pop()
+            self.sJumps.append(self.i)
+            #self.tablaQ[false]['opNuevo'] = self.i 
+           
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+        
+        elif(operando == 'gotoTC'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i  + 1
+            pass
+        
+        
+        
+
 
 
         
