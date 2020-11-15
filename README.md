@@ -60,6 +60,13 @@
 intentar con el siguiente codigo:
 programa m :  var int: a; main{  if(a < 2)then {a =2-8;    if(a<2)then{ a = 9;} else {write("w");};    a = 9 *(2+5);}      ;  }
 
+# Decimo avance 
+- Se implementaron los cuadruplos de fors
+- Se implementaron los cuadruplos de whiles
+- Se corrigieron los cuadruplos aritmeticos para que se almacenara la direccion en vez del resultado
+- se implementaron tablas de constantes
+
+
 # Ejemplo del leguaje para ver las tablas:
 
 programa raul : var int : a; var float : b; void module funv (int ejem )var int: d{clear(); var int : c;};float module ejem2 (float r, int javier) var int : j {clear(); var int: e; return(23)}; int module ejem3(char w){var int :s; return(2)};main{ var int :h; var char : l;}

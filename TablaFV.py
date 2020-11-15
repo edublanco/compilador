@@ -1,13 +1,18 @@
-
+k = 0
+memoriaC = 501
+tablaC = {}
 
 class  tablas():
     tablaF = {}
     i = 0 
     scope = "global"
     tablaV = {}
+    tablaC = {}
     j=0
+    #k = 0
     memoriaF = 0
     memoriaV = 0
+    
     auxMemVarG = 0
     fNoHayGlobal = True
 
@@ -15,7 +20,16 @@ class  tablas():
         self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
         self.i += 1
         
+    def agregarC(self, valor, tipo):  
+        global k
+        global memoriaC
+        m = memoriaC
+        global tablaC 
+        tablaC[k]= {'type': tipo, 'value': valor, 'memoria' : m}
+        memoriaC += 1 
+        k = k + 1
 
+    
     def checa(self,nombre):
         w = 1
         while(w <= len(self.tablaV)):
@@ -42,6 +56,17 @@ class  tablas():
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
             w +=1
         return auxTipo
+
+    def buscarM(self, nombre):
+        w = 1
+        auxMem =''
+        while(w <= len(self.tablaV)):
+            if (self.tablaV[w]['name'] == nombre):
+                #print("valor: ", valor)
+                auxMem = self.tablaV[w]['memoria'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+        return auxMem
 
     def agregarV(self, nombre, tipo, valor):
         

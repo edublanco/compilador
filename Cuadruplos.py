@@ -1,4 +1,6 @@
+#from main import *
 from TablaFV  import * 
+import TablaFV
 from CuboSemantico import cubo
 
 class  cuad():
@@ -86,35 +88,50 @@ class  cuad():
     def agregarTipo(self):
         pass
 
-    def agregarCuad(self, opIzq, opDer, operando):
-            
+    def agregarCuad(self, opIzq, opDer, operando):  
         opeNuevo = 0
+        
         if(isinstance(opIzq, str)):
-            try:
-                int(opIzq)
-                opIzq = int(opIzq)
-            except:
-                float(opIzq)
-                opIzq = float(opIzq)
-            else:
-                pass
+            opIzq = tablas.buscarM(tablas, opIzq)
 
         if(isinstance(opDer, str)):
-            try:
-                int(opDer)
-                opDer = int(opDer)
-            except:
-                float(opDer)
-                opDer = float(opDer)
+            opDer = tablas.buscarM(tablas, opDer)
+    
+        #if(isinstance(opIzq, str)):
+        #    try:
+        #        int(opIzq)
+        #        opIzq = int(opIzq)
+        #    except:
+        #        float(opIzq)
+        #        opIzq = float(opIzq)
+        #    else:
+        #        pass
+
+        #if(isinstance(opDer, str)):
+        #    try:
+        #        int(opDer)
+        #        opDer = int(opDer)
+        #    except:
+        #        float(opDer)
+        #        opDer = float(opDer)
 
         if(operando == '+'):
-            opeNuevo = opIzq + opDer
+            #opeNuevo = opIzq + opDer
+            tablas.agregarC( tablas, 0, 'pendiente')
+            opeNuevo = TablaFV.memoriaC - 1
+
         elif(operando == '-'):
-            opeNuevo = opIzq - opDer
+            #opeNuevo = opIzq - opDer
+            tablas.agregarC( tablas, 0, 'pendiente')
+            opeNuevo = TablaFV.memoriaC - 1
         elif(operando == '*'):
-            opeNuevo = opIzq * opDer
+            #opeNuevo = opIzq * opDer
+            tablas.agregarC( tablas, 0, 'pendiente')
+            opeNuevo = TablaFV.memoriaC - 1
         elif(operando == '/'):
-            opeNuevo = opIzq / opDer
+            #opeNuevo = opIzq / opDer
+            tablas.agregarC( tablas, 0, 'pendiente')
+            opeNuevo = TablaFV.memoriaC - 1
         elif (operando == 'end'):
             opeNuevo = opDer
         
@@ -140,9 +157,12 @@ class  cuad():
             #self.tablaQ.clear()
 
     def agregarCuadAsign(self, opIzq, opDer, operando):
-        opeNuevo = 0
-        opeNuevo = opDer
+        opeNuevo = opIzq
+        opIzq =  opDer
+        #opeNuevo = opDer
+        opDer = 0  
 
+        
         self.tablaQ[self.i] = {
             'operando': operando ,
             'opIzq': opIzq, 
@@ -166,7 +186,6 @@ class  cuad():
             'opNuevo': exp    
             }
 
-    
         self.resultado = opeNuevo
         print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
@@ -175,36 +194,59 @@ class  cuad():
         opeNuevo = 0
         #opeNuevo = exp
 
+        print("exp1: ", exp1)
+        print("exp2: ", exp2)
+        if(isinstance(exp1, str)):
+            exp1 = tablas.buscarM(tablas, exp1)
+
+        if(isinstance(exp2, str)):
+            exp1 = tablas.buscarM(tablas, exp2)     
+
+        print("new exp1: ", exp1)
+        print("new exp2: ", exp2)          
+
         if(operando == '<'):
-            if(exp1 < exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 < exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
         elif(operando == '>'):
-            if(exp1 > exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 > exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
         elif(operando == '<>'):
-            if(exp1 != exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 != exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
         elif(operando == '<='):
-            if(exp1 <= exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 <= exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
         elif(operando == '>='):
-            if(exp1 >= exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 >= exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
         elif(operando == '=='):
-            if(exp1 == exp2):
-                opeNuevo = 1
-            else:
-                opeNuevo = 0
+            tablas.agregarC( tablas, 0, 'bool')
+            opeNuevo = TablaFV.memoriaC - 1
+            #if(exp1 == exp2):
+            #    opeNuevo = 1
+            #else:
+            #    opeNuevo = 0
 
         self.tablaQ[self.i] = {
             'operando': operando,
@@ -220,13 +262,14 @@ class  cuad():
 
     sJumps = []
     dire = 0
+
     def agregarCuadIf(self,  goto):
         operando = goto
         
         if(operando == 'gotoF'):
             self.tablaQ[self.i] = {
             'operando': goto ,
-            'opIzq': 0, 
+            'opIzq': self.resultado, 
             'opDer': 0, 
             'opNuevo': 0    
             }
@@ -237,12 +280,12 @@ class  cuad():
   
         elif(operando == 'gotoFC'):
             dire = self.sJumps.pop()
-            self.tablaQ[dire]['opNuevo'] = self.i  +1
+            self.tablaQ[dire]['opNuevo'] = self.i  #+1
             pass
         
         elif(operando == 'gotoFC2'):
             dire = self.sJumps.pop()
-            self.tablaQ[dire]['opNuevo'] = self.i  +2
+            self.tablaQ[dire]['opNuevo'] = self.i  +1 #+2
             pass
 
         elif(operando == 'gotoT'):
@@ -252,17 +295,81 @@ class  cuad():
             'opDer': 0, 
             'opNuevo': 0    
             }
-            #false = self.sIfs.pop
-            #false = self.sIf.pop()
+
             self.sJumps.append(self.i)
-            #self.tablaQ[false]['opNuevo'] = self.i 
-           
             print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
         elif(operando == 'gotoTC'):
             dire = self.sJumps.pop()
-            self.tablaQ[dire]['opNuevo'] = self.i  + 1
+            self.tablaQ[dire]['opNuevo'] = self.i  #+ 1
+            pass
+        
+
+    def agregarCuadWhile(self,  goto):
+        operando = goto
+        
+        if(operando == 'gotoF'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': self.resultado, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            self.sJumps.append(self.i)
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+    
+        elif(operando == 'gotoFC'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i +1
+            pass
+
+        elif(operando == 'gotoT'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': self.sJumps.pop()    
+            }
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+        
+        elif(operando == 'gotoTC'):
+            print("slef i en gotoc del while: ",self.i)  
+            self.sJumps.append(self.i)
+            pass
+
+    def agregarCuadFor(self,  goto):
+        operando = goto
+        
+        if(operando == 'gotoF'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': self.sJumps.pop()    
+            }
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+        elif(operando == 'gotoFC'):
+            print("slef i en gotoc del for: ",self.i)  
+            self.sJumps.append(self.i)
+            pass
+        elif(operando == 'gotoT'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': self.resultado, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            self.sJumps.append(self.i)
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+        
+        elif(operando == 'gotoTC'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i +1
             pass
         
         

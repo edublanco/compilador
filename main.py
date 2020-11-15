@@ -199,9 +199,9 @@ class CalcParser(Parser):
     @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
     def asignacion(self,p):
         if(tablas.checa(p[0])):
-            tablas.agregarValor(p[0], cuad.resultado)
-            cuad.agregarCuadAsign(p[0],cuad.resultado, '=') 
-            
+            #tablas.agregarValor(p[0], cuad.resultado)
+            auxM = tablas.buscarM(p[0]) 
+            cuad.agregarCuadAsign(auxM,cuad.resultado, '=') 
         else: 
             print("la variable no esta")
         pass
@@ -296,21 +296,89 @@ class CalcParser(Parser):
 
 
     #fors----------------------------------------------------
-    @_('FOR ID ASIGNACION exp end TO exp end DO "{" for1 "}"')
+    pExp = 0
+    sExp = 0
+    @_('FOR pnF2  DO pnF4 "{" for1  pnF5 "}" pnF6')
     def for0(self,p):
+        pass
+
+    @_('pnF3 pnF1 TO exp end sExp2')
+    def pnF2(self,p):
+        cuad.agregarCuadExpresion( self.pExp,self.sExp, '==')
+        pass
+
+    @_('')
+    def pnF3(self,p):
+        cuad.agregarCuadFor( 'gotoFC')
+        pass
+
+    @_('')
+    def pnF4(self,p):
+        cuad.agregarCuadFor( 'gotoT')
+        pass
+
+    @_('')
+    def pnF5(self,p):
+        cuad.agregarCuadFor( 'gotoTC')
+        pass
+
+    @_('')
+    def pnF6(self,p):
+        cuad.agregarCuadFor( 'gotoF')
+        pass
+
+    @_('ID ASIGNACION exp end pExp1  ')
+    def pnF1(self,p):
+        #tablas.agregarV(p.ID,self.auxTipo, 0)
+        if(tablas.checa(p[0])):
+            #tablas.agregarValor(p[0], cuad.resultado)
+            auxM = tablas.buscarM(p[0]) 
+            cuad.agregarCuadAsign(auxM,cuad.resultado, '=') 
+        else: 
+            print("la variable no esta")
+        pass
+
+    @_('')
+    def pExp1(self,p):
+        self.pExp = cuad.resultado
+        pass
+    @_('')
+    def sExp2(self,p):
+        self.sExp = cuad.resultado
         pass
 
     @_('estatutos ', '')
     def for1(self,p):
         pass
 
+
     #while----------------------------------------------------
-    @_('WHILE "(" expresion ")" DO "{" while1 "}"')
+    @_('WHILE "(" pnw1 expresion ")" DO pnw2 "{" while1 pnw3 "}" pnw4')
     def while0(self,p):
         pass
 
     @_('estatutos', '')
     def while1(self,p):
+        pass
+
+    @_('') # guarda la direccion a donde hay que ir en caso de true 
+    def pnw1(self,p):
+        cuad.agregarCuadWhile('gotoTC')
+        pass
+
+    @_( '')
+    def pnw2(self,p):# guarda la direccion a donde hay que ir en caso de true 
+        cuad.agregarCuadWhile('gotoF')
+        pass
+    
+    @_( '')
+    def pnw3(self,p):
+        cuad.agregarCuadWhile('gotoFC')
+        pass
+
+    @_( '')
+    def pnw4(self,p):
+        cuad.agregarCuadWhile('gotoT')
         pass
     
     #color --------------------------------------------------
@@ -454,21 +522,29 @@ class CalcParser(Parser):
     @_('ID')
     def varnum2(self,p):
         if(tablas.checa(p[0])):
-            auxT = tablas.extraerValor(p[0])
+            #auxT = tablas.extraerValor(p[0])
             #self.auxValor = auxT
-            cuad.agregaCons(auxT)
-            
+            cuad.agregaCons(p[0])
+            #cuad.resultado = auxT
         else: 
             print("la variable no esta")
         pass
-        
 
-       
-
-    @_('CTEF', 'CTEI')
+    @_('varnum5', 'varnum4')
     def varnum3(self,p):
-        #self.auxValor = p[0]
-        cuad.agregaCons(p[0])
+        pass
+
+    @_('CTEI')
+    def varnum4(self,p):
+        tablas.agregarC(p[0], 'int')
+        #tablas.memoriaC
+        cuad.agregaCons(TablaFV.memoriaC -1 )
+        pass
+
+    @_('CTEF')
+    def varnum5(self,p):
+        tablas.agregarC(p[0], 'float')
+        cuad.agregaCons(TablaFV.memoriaC-1)
         pass
 
     #VAR --------------------------------------------------
@@ -513,19 +589,26 @@ if __name__ == '__main__':
             count = 1
             count2 = 0
             count3 = 1
+            count4 = 0
             print("tabla  de variables:")
             for line in range(len(tablas.tablaV)):
                 print(count," : ", tablas.tablaV[count])
                 count =   count  + 1
 
+            print("tabla  de constantes:")
+            for line in range(len(TablaFV.tablaC)):
+                print(count4," : ", TablaFV.tablaC[count4])
+                count4 =   count4  + 1
+
             print("tabla funciones:")   
             for line in range(len(tablas.tablaF)):
                 print(count2 +1," : ", tablas.tablaF[count2])
                 count2 =   count2 +1
+
             print("tabla cuadruplos:")   
             for line in range(len(cuad.tablaQ)):
-                print(count3 +1," : ", cuad.tablaQ[count3])
-                count3 =   count3 +1
+                print(count3 ," : ", cuad.tablaQ[count3])
+                count3 =   count3 + 1
           
         except EOFError:
             break
