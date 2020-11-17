@@ -74,21 +74,32 @@ class CalcParser(Parser):
         self.names = { }
     
     #Programa -----------------------------------------------------
-    @_('PROGRAMA ID ":"  programa2')
+    @_('PROGRAMA pnp ID ":"  programa2')
     def programa(self, p):
+        pass
+
+    @_('')
+    def pnp(self, p):
+        cuad.agregarCuadMain('gotoT')
         pass
 
     @_('var ";"  programa2 ', 'programa3')
     def programa2(self, p):
         pass
 
-    @_('function ";" programa3 ', 'main ')
+    @_('function ";" programa2 ','programa2' ,'main ')
     def programa3(self, p):
         pass
 
-    @_( 'MAIN pn1  "{" estatutos "}" ')
+    @_( 'MAIN pnp2 pn1  "{" estatutos "}" ')
     def main(self, p):
         tablas.scope = "global"
+        cuad.agregarCuadMain('end')
+        pass
+
+    @_('')
+    def pnp2(self, p):
+        cuad.agregarCuadMain('gotoTC')
         pass
 
     @_( '')
@@ -105,6 +116,7 @@ class CalcParser(Parser):
     @_('VOID MODULE   pn2 "(" fun4 ")" fun2 "{" fun3 "}" ')
     def funVoid(self, p):
         tablas.agregarF(self.auxPn2, "void", 0)
+        cuad.agregarCuadCall('return', 0, 0)
         pass
 
     @_('ID')
@@ -206,17 +218,39 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
     
-    @_('CSTRING ','LETRA') # CHECAR CON STRINGS
+    @_('CSTRING ','LETRA', 'asignacion3 ') # CHECAR CON STRINGS
     def asignacion2(self,p):
         cuad.resultado = p[0]
 
-    #callvoid---------------------------------------------------
-    @_('ID "(" parametros callVoid2 ")" ')
-    def callVoid(self,p):
+    @_('callVoid') # CHECAR CON STRINGS
+    def asignacion3(self,p):
         pass
 
-    @_('"," parametros ', '') #<<<<---------------  checar
+    #callvoid---------------------------------------------------
+    auxp = 1
+    @_(' pnCall "(" exp end pnParam callVoid2 ")" ', 'pnCall "("  ")" ')
+    def callVoid(self,p):
+        cuad.agregarCuadCall('gosub', self.auxCall, 0)
+        self.auxp = 1
+        pass
+
+    @_('ID') #<<<<---------------  checar
+    def pnCall(self,p):
+        if(tablas.buscarF(p[0])):
+            self.auxCall =  p[0]
+            cuad.agregarCuadCall('era', p[0], 0)
+        else:
+            print("no esta")
+        pass
+
+    @_('"," exp end pnParam ', '') #<<<<---------------  checar
     def callVoid2(self,p):
+        pass
+
+    @_('') #<<<<---------------  checar
+    def pnParam(self,p):
+        cuad.agregarCuadCall('param', self.auxp,  cuad.resultado)
+        self.auxp += 1  
         pass
 
     #decision---------------------------------------------------
@@ -351,7 +385,6 @@ class CalcParser(Parser):
     def for1(self,p):
         pass
 
-
     #while----------------------------------------------------
     @_('WHILE "(" pnw1 expresion ")" DO pnw2 "{" while1 pnw3 "}" pnw4')
     def while0(self,p):
@@ -447,7 +480,9 @@ class CalcParser(Parser):
     #RETURN------------------------------------------------
     @_('RETURN "(" exp end ")" ')
     def return0(self,p):    
+        cuad.agregarCuadCall('return', 0, cuad.resultado)
         pass
+
 
     #EXP---------------------------------------------------
     @_('termino exp2 ')
@@ -498,6 +533,7 @@ class CalcParser(Parser):
     @_('tipo ID ')
     def parametros(self,p):
         tablas.agregarV(p.ID,self.auxTipo, 0)
+        
         pass
 
     #factor --------------------------------------------------

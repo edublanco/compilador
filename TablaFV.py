@@ -68,6 +68,47 @@ class  tablas():
             w +=1
         return auxMem
 
+    def buscarTypeC(self, nombre):
+        w = 0
+        auxVal =''
+        while(w < len(tablaC)):
+            if (tablaC[w]['memoria'] == nombre):
+                #print("valor: ", valor)
+                auxVal = tablaC[w]['type'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+            #print("WACHA: ",tablaC)
+        return auxVal
+
+    def buscarTypeV(self, nombre):
+        w = 1
+        auxVal =''
+        while(w <= len(self.tablaV)):
+            #if (self.tablaV[w]['nombre'] == nombre):
+                #print("valor: ", valor)
+            try:
+                auxVal = self.tablaV[w]['type'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            except:
+                pass
+            w +=1
+        return auxVal
+    
+    def buscarF(self, nombre):
+        w = 0
+        #auxMem =''
+        print("la len es: ", len(self.tablaF))
+        
+        while(w < len(self.tablaF)):
+            print("w es :", w)
+            if (self.tablaF[w]['name'] == nombre):
+                #print("valor: ", valor)
+                return True
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            
+            w +=1
+        return False
+
     def agregarV(self, nombre, tipo, valor):
         
         self.j += 1

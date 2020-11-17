@@ -12,7 +12,6 @@
 - se agrego la tabla de variables 
 - se agrego la tabla de funciones
 
-
 # Tercer avance 
 - correccion de errores en las reglas gramaticales
 - aceptacion de strings
@@ -66,6 +65,10 @@ programa m :  var int: a; main{  if(a < 2)then {a =2-8;    if(a<2)then{ a = 9;} 
 - Se corrigieron los cuadruplos aritmeticos para que se almacenara la direccion en vez del resultado
 - se implementaron tablas de constantes
 
+# Onceavo avance 
+- Se implementaron los cuadruplos de funciones
+- Se implementaron los tipos 
+- Se corrigieron errores
 
 # Ejemplo del leguaje para ver las tablas:
 

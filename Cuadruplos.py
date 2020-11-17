@@ -1,7 +1,7 @@
 #from main import *
 from TablaFV  import * 
 import TablaFV
-from CuboSemantico import cubo
+from CuboSemantico import *
 
 class  cuad():
     tablaQ = {}
@@ -13,6 +13,7 @@ class  cuad():
     variable = ''
     fin = False
     tablas=tablas()
+    cubo = cubo()
 
     opDer = 0
     opIzq = 0
@@ -90,13 +91,21 @@ class  cuad():
 
     def agregarCuad(self, opIzq, opDer, operando):  
         opeNuevo = 0
-        
+        tipoFinal = ''
+
         if(isinstance(opIzq, str)):
             opIzq = tablas.buscarM(tablas, opIzq)
+            tipoIzq = tablas.buscarTypeV(tablas, opIzq)
+        else:   
+            tipoIzq = tablas.buscarTypeC(tablas, opIzq)
 
         if(isinstance(opDer, str)):
             opDer = tablas.buscarM(tablas, opDer)
-    
+            tipoDer = tablas.buscarTypeV(tablas, opDer)
+        else:
+            tipoDer = tablas.buscarTypeC(tablas, opDer)
+           
+        
         #if(isinstance(opIzq, str)):
         #    try:
         #        int(opIzq)
@@ -117,20 +126,25 @@ class  cuad():
 
         if(operando == '+'):
             #opeNuevo = opIzq + opDer
-            tablas.agregarC( tablas, 0, 'pendiente')
+            tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['+']
+            tablas.agregarC( tablas, 0, tipoFinal)
             opeNuevo = TablaFV.memoriaC - 1
 
         elif(operando == '-'):
             #opeNuevo = opIzq - opDer
-            tablas.agregarC( tablas, 0, 'pendiente')
+            tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['-']
+            tablas.agregarC( tablas, 0, tipoFinal)
             opeNuevo = TablaFV.memoriaC - 1
         elif(operando == '*'):
             #opeNuevo = opIzq * opDer
-            tablas.agregarC( tablas, 0, 'pendiente')
+            tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['*']
+            tablas.agregarC( tablas, 0, tipoFinal)
             opeNuevo = TablaFV.memoriaC - 1
         elif(operando == '/'):
             #opeNuevo = opIzq / opDer
-            tablas.agregarC( tablas, 0, 'pendiente')
+            tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['/']
+            print("el tipo final es: ",tipoFinal)
+            tablas.agregarC( tablas, 0, tipoFinal)
             opeNuevo = TablaFV.memoriaC - 1
         elif (operando == 'end'):
             opeNuevo = opDer
@@ -208,6 +222,7 @@ class  cuad():
         if(operando == '<'):
             tablas.agregarC( tablas, 0, 'bool')
             opeNuevo = TablaFV.memoriaC - 1
+            
             #if(exp1 < exp2):
             #    opeNuevo = 1
             #else:
@@ -371,6 +386,82 @@ class  cuad():
             dire = self.sJumps.pop()
             self.tablaQ[dire]['opNuevo'] = self.i +1
             pass
+        
+    def agregarCuadMain(self,  goto):
+        operando = goto
+
+        if(operando == 'gotoT'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': self.resultado, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            self.sJumps.append(self.i)
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+        
+        elif(operando == 'end'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            print("prueba de tipos:")
+            i = cubo.cuboS['int']['float']['*']
+            print("prueba de tipos es:", i)
+            self.sJumps.append(self.i)
+            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            self.i += 1
+
+        elif(operando == 'gotoTC'):
+            dire = self.sJumps.pop()
+            self.tablaQ[dire]['opNuevo'] = self.i  #+1
+            pass
+
+    def agregarCuadCall(self,  goto, nombre, valor):
+        operando = goto
+   
+
+        if(operando == 'era'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': nombre, 
+            'opDer': 0, 
+            'opNuevo': 0    
+            }
+            self.i += 1
+        
+  
+        elif(operando == 'return'):
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': valor    
+            }
+            self.i += 1
+        
+        elif(operando == 'param'):
+            #tablas.agregarV(p.ID,self.auxTipo, 0)
+            
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': valor, 
+            'opDer': 0, 
+            'opNuevo': 'param' + str(nombre)  
+            }
+            self.i += 1
+        elif(operando == 'gosub'):
+            #tablas.agregarV(p.ID,self.auxTipo, 0)
+            self.tablaQ[self.i] = {
+            'operando': goto ,
+            'opIzq': nombre, 
+            'opDer': 0, 
+            'opNuevo': 0
+            }
+            self.i += 1
         
         
         
