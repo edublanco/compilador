@@ -3,7 +3,15 @@ from TablaFV  import *
 import TablaFV
 from CuboSemantico import *
 
+
 class  cuad():
+
+    fResult = 9000
+    iResult = 10000
+    bResult = 11000
+    cResult = 12000
+    tempType =''
+
     tablaQ = {}
     i = 1 
     sOperadores = []
@@ -84,11 +92,6 @@ class  cuad():
             self.agregarCuad(self.opIzq, self.opDer, self.operador)
             self.agregaOp('end') 
 
-        
-
-    def agregarTipo(self):
-        pass
-
     def agregarCuad(self, opIzq, opDer, operando):  
         opeNuevo = 0
         tipoFinal = ''
@@ -104,51 +107,70 @@ class  cuad():
             tipoDer = tablas.buscarTypeV(tablas, opDer)
         else:
             tipoDer = tablas.buscarTypeC(tablas, opDer)
-           
         
-        #if(isinstance(opIzq, str)):
-        #    try:
-        #        int(opIzq)
-        #        opIzq = int(opIzq)
-        #    except:
-        #        float(opIzq)
-        #        opIzq = float(opIzq)
-        #    else:
-        #        pass
+        if(tipoDer == ''):
+            tipoDer = self.tempType
 
-        #if(isinstance(opDer, str)):
-        #    try:
-        #        int(opDer)
-        #        opDer = int(opDer)
-        #    except:
-        #        float(opDer)
-        #        opDer = float(opDer)
+        if(tipoIzq == ''):
+            tipoIzq = self.tempType
 
         if(operando == '+'):
-            #opeNuevo = opIzq + opDer
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['+']
-            tablas.agregarC( tablas, 0, tipoFinal)
-            opeNuevo = TablaFV.memoriaC - 1
+            #tablas.agregarC( tablas, 0, tipoFinal)
+            if(tipoFinal == 'int'):
+                self.iResult += 1
+                opeNuevo = self.iResult
+                self.tempType = 'int'
+            elif(tipoFinal =='float'):
+                self.fResult += 1
+                opeNuevo = self.fResult
+                self.tempType = 'float'
 
         elif(operando == '-'):
-            #opeNuevo = opIzq - opDer
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['-']
-            tablas.agregarC( tablas, 0, tipoFinal)
-            opeNuevo = TablaFV.memoriaC - 1
+            #tablas.agregarC( tablas, 0, tipoFinal)
+            if(tipoFinal == 'int'):
+                self.iResult += 1
+                opeNuevo = self.iResult
+                self.tempType = 'int'
+            elif(tipoFinal =='float'):
+                self.fResult += 1
+                opeNuevo = self.fResult
+                self.tempType = 'float'
+
         elif(operando == '*'):
-            #opeNuevo = opIzq * opDer
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['*']
-            tablas.agregarC( tablas, 0, tipoFinal)
-            opeNuevo = TablaFV.memoriaC - 1
+            #tablas.agregarC( tablas, 0, tipoFinal)
+            if(tipoFinal == 'int'):
+                self.iResult += 1
+                opeNuevo = self.iResult
+                self.tempType = 'int'
+            elif(tipoFinal =='float'):
+                self.fResult += 1
+                opeNuevo = self.fResult
+                self.tempType = 'float'
+
         elif(operando == '/'):
-            #opeNuevo = opIzq / opDer
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['/']
-            print("el tipo final es: ",tipoFinal)
             tablas.agregarC( tablas, 0, tipoFinal)
-            opeNuevo = TablaFV.memoriaC - 1
+            if(tipoFinal == 'int'):
+                self.iResult += 1
+                opeNuevo = self.iResult
+                self.tempType = 'int'
+            elif(tipoFinal =='float'):
+                self.fResult += 1
+                opeNuevo = self.fResult
+                self.tempType = 'float'
+
+        
         elif (operando == 'end'):
             opeNuevo = opDer
-        
+
+
+        if(TablaFV.scope != "global" and tipoFinal == 'int' ):
+            tablas.tablaEra[TablaFV.scope][10000] +=1
+        elif(TablaFV.scope != "global" and tipoFinal == 'float' ):
+            tablas.tablaEra[TablaFV.scope][9000] +=1
         
         self.tablaQ[self.i] = {
             'operando': operando ,
@@ -163,12 +185,7 @@ class  cuad():
             self.i += 1
         elif(operando == 'end'):
             self.resultado = opeNuevo
-            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
-            #print("resultado: ", opeNuevo)
-            #print("tabla operadores final",self.sOperadores)
-            #print("tabla temporales final",self.sTemp)
-            #self.i = 1
-            #self.tablaQ.clear()
+
 
     def agregarCuadAsign(self, opIzq, opDer, operando):
         opeNuevo = opIzq
@@ -176,20 +193,32 @@ class  cuad():
         #opeNuevo = opDer
         opDer = 0  
 
-        
         self.tablaQ[self.i] = {
             'operando': operando ,
             'opIzq': opIzq, 
             'opDer': opDer, 
             'opNuevo': opeNuevo    
             }
-
-    
         self.resultado = opeNuevo
         print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
-    def agregarCuadF(self, exp, funcion):
+    def agregarCuadF0(self,  funcion):
+        opeNuevo = 0
+        opeNuevo = exp
+
+        self.tablaQ[self.i] = {
+            'operando': funcion ,
+            'opIzq': 0, 
+            'opDer': 0, 
+            'opNuevo': 0 
+            }
+
+        self.resultado = opeNuevo
+        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        self.i += 1
+
+    def agregarCuadF1(self, exp, funcion):
         opeNuevo = 0
         opeNuevo = exp
 
@@ -203,10 +232,25 @@ class  cuad():
         self.resultado = opeNuevo
         print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
-       
+
+    def agregarCuadF2(self, exp1, exp2, funcion):
+        opeNuevo = 0
+        opeNuevo = exp2
+
+        self.tablaQ[self.i] = {
+            'operando': funcion ,
+            'opIzq': 0, 
+            'opDer': exp1, 
+            'opNuevo': exp2    
+            }
+
+        self.resultado = opeNuevo
+        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        self.i += 1
+
+    
     def agregarCuadExpresion(self, exp1,exp2, operando):
         opeNuevo = 0
-        #opeNuevo = exp
 
         print("exp1: ", exp1)
         print("exp2: ", exp2)
@@ -220,48 +264,41 @@ class  cuad():
         print("new exp2: ", exp2)          
 
         if(operando == '<'):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            
-            #if(exp1 < exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            self.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+
         elif(operando == '>'):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            #if(exp1 > exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            sself.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+   
         elif(operando == '<>'):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            #if(exp1 != exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            self.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+
         elif(operando == '<='):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            #if(exp1 <= exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            self.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+  
         elif(operando == '>='):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            #if(exp1 >= exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            self.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+          
         elif(operando == '=='):
-            tablas.agregarC( tablas, 0, 'bool')
-            opeNuevo = TablaFV.memoriaC - 1
-            #if(exp1 == exp2):
-            #    opeNuevo = 1
-            #else:
-            #    opeNuevo = 0
+            self.bResult += 1
+            opeNuevo = self.bResult
+            if(TablaFV.scope != "global"):
+                tablas.tablaEra[TablaFV.scope][11000] +=1
+
 
         self.tablaQ[self.i] = {
             'operando': operando,

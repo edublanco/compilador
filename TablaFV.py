@@ -1,11 +1,16 @@
 k = 0
 memoriaC = 501
 tablaC = {}
-
+scope = "global"
+cFloat = 5000
+cInt = 6000
+cBool = 7000
+cChar = 8000  
 class  tablas():
     tablaF = {}
+    tablaEra = {}
     i = 0 
-    scope = "global"
+    #scope = "global"
     tablaV = {}
     tablaC = {}
     j=0
@@ -20,13 +25,29 @@ class  tablas():
         self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
         self.i += 1
         
+    m = 0
     def agregarC(self, valor, tipo):  
         global k
-        global memoriaC
-        m = memoriaC
+        global cFloat
+        global cInt
+        global cBool
+        global cChar
         global tablaC 
-        tablaC[k]= {'type': tipo, 'value': valor, 'memoria' : m}
-        memoriaC += 1 
+         
+        if(tipo == 'float'):
+            cFloat +=1 
+            self.m = cFloat
+        elif(tipo == 'int'):
+            cInt +=1 
+            self.m = cInt
+        elif(tipo == 'char'):
+            cChar +=1 
+            self.m = cChar
+        elif(tipo == 'bool'):
+            cBool +=1 
+            self.m = cBool
+        
+        tablaC[k]= {'type': tipo, 'value': valor, 'memoria' : self.m}
         k = k + 1
 
     
@@ -109,40 +130,45 @@ class  tablas():
             w +=1
         return False
 
+
+    funFloat = 1000
+    funInt = 2000
+    funBool= 3000
+    funChar = 4000
     def agregarV(self, nombre, tipo, valor):
-        
+        print("scope", scope)
         self.j += 1
-        # checa si la memoria es global
-        # memoria de la variable en en 1, el aux es para cuando vuelva a global
-        if(tablas.scope == "global"  and self.memoriaV < 1000):
+
+        # si la primera variable es en global
+        if(scope == "global"  and self.memoriaV < 1000):
             self.memoriaV += 1
             self.auxMemVarG += 1
             self.fNoHayGlobal = False
-        
-        # checa si el scope es otra vez global y le resta a la direccion de memoria de las variables
-        # la direccion de memoria de funciones para devolver la direccion memoria a global, y continua el conteo de memoria global
-        elif(self.scope == "global" and self.memoriaV >= 1000 ):
-            self.memoriaV -= self.memoriaF 
+        # cuando vuelve a global 
+        elif(scope == "global" and self.memoriaV >= 1000 ):
             self.memoriaV = self.auxMemVarG + 1
-
-        elif ( self.fNoHayGlobal ): 
-            #self.memoriaV += 1
-            self.memoriaV = self.memoriaF +1
-        # si sigue en el scope de la misma funcion nomas suma 1 a la direcion de memoria de las variables
-         # checa si la direccion memoria es del mismo scope, sino empieza 
-         # la direccion de memoria de las variables en en 1 + la direecion de memoria de la funcion
-        
-        elif (self.scope != self.tablaV[self.j - 1]['scope']  ): 
-            #self.memoriaV += 1
-            self.memoriaV = self.memoriaF +1
-            #self.memoriaV += 1000
+        # cuando esta dentro de un scope no global
+        elif( scope != "global"):
+            if(tipo == 'float'):
+                self.funFloat += 1 
+                self.memoriaV = self.funFloat
+                self.tablaEra[scope][1000] +=1
+            elif(tipo == 'int'):
+                print("entre al int")
+                self.funInt += 1 
+                self.memoriaV = self.funInt
+                self.tablaEra[scope][2000] +=1
+            elif(tipo == 'bool'):
+                self.funBool += 1 
+                self.memoriaV = self.funBool
+                self.tablaEra[scope][3000] +=1
+            elif(tipo == 'char'):
+                self.funChar += 1 
+                self.memoriaV = self.funChar
+                self.tablaEra[scope][4000] +=1
         else:
             self.memoriaV += 1
-        
-        #print("memoriaf: ", self.memoriaF )
-        #print("memoriaV: ", self.memoriaV )
 
+        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': scope, 'memoria' : self.memoriaV}
 
-        self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': self.scope, 'memoria' : self.memoriaV}
-        #print(self.tablaV)
     

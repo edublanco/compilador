@@ -1,5 +1,3 @@
-
-
 from sly import Lexer, Parser
 from collections import defaultdict
 from TablaFV  import * 
@@ -16,7 +14,8 @@ class CalcLexer(Lexer):
                 MAIN, TO, DO, WRITE, READ, SIZE, COLOR, CLEAR,
                 PENDOWN, PENUP, ARC, CIRCLE, POINT, LINE, THEN, LETRA}
 
-    ignore = ' \t'
+    ignore =' \t'
+
     literals = { ';', ':', '(', ')', '{', '}',','}
 
     CTEF    = r'([0-9]+)(\.)([0-9]+)?'
@@ -63,12 +62,14 @@ class CalcLexer(Lexer):
     ID['then'] = THEN
     ID['for'] = FOR
     ID['while'] = WHILE
+ 
     
 class CalcParser(Parser):
     # Get the token list from the lexer (required)
     tokens = CalcLexer.tokens
     aux = 0 
     cuad = cuad()
+    #tablaEra{}
 
     def __init__(self):
         self.names = { }
@@ -87,13 +88,13 @@ class CalcParser(Parser):
     def programa2(self, p):
         pass
 
-    @_('function ";" programa2 ','programa2' ,'main ')
+    @_('function ";"  programa2','programa2' ,'main ')
     def programa3(self, p):
         pass
 
     @_( 'MAIN pnp2 pn1  "{" estatutos "}" ')
     def main(self, p):
-        tablas.scope = "global"
+        TablaFV.scope = "global"
         cuad.agregarCuadMain('end')
         pass
 
@@ -104,7 +105,7 @@ class CalcParser(Parser):
 
     @_( '')
     def pn1(self, p):
-        tablas.scope = "global"
+        TablaFV.scope = "global"
        
     #function---------------------------------------------------
     @_('fun', 'funVoid', 'size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
@@ -112,38 +113,65 @@ class CalcParser(Parser):
         pass 
     
     #funvoid----------------------------------------------------
+
+
     auxPn2 = ""
-    @_('VOID MODULE   pn2 "(" fun4 ")" fun2 "{" fun3 "}" ')
+    @_('VOID MODULE   pn2 "(" fun4 ")"  "{" fun3 "}" ')
     def funVoid(self, p):
         tablas.agregarF(self.auxPn2, "void", 0)
         cuad.agregarCuadCall('return', 0, 0)
+        tablas.funFloat = 1000
+        tablas.funInt = 2000
+        tablas.funBool= 3000
+        tablas.funChar = 4000
+        cuad.fResult = 9000
+        cuad.iResult = 10000
+        cuad.bResult = 11000
+        cuad.cResult = 12000
+        #tablas.tablaEra[self.auxPn2]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
+
         pass
 
     @_('ID')
     def pn2(self, p):
         self.auxPn2 = p.ID
-        tablas.scope = self.auxPn2
-        tablas.memoriaV += 1000 
-        tablas.memoriaF += 1000 
+        TablaFV.scope = self.auxPn2
+        #                      var fl | var int|var bool|var char|temp float|temp int|float bool
+        tablas.tablaEra[p.ID]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
+
         
     #fun-----------------------------------------------------------
     auxPn3 = ""
     auxTipo = ""
-    @_('tipo  MODULE  pn3 "(" fun4 ")" fun2 "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
+    rtr = 0
+    @_('tipo   MODULE  pn3 "(" fun4 ")" "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
         tablas.agregarF(self.auxPn3,self.auxTipo, 0) # hay que implementar el cubo semantico para que jale el return
+        tablas.funFloat = 1000
+        tablas.funInt = 2000
+        tablas.funBool= 3000
+        tablas.funChar = 4000
+        cuad.fResult = 9000
+        cuad.iResult = 10000
+        cuad.bResult = 11000
+        cuad.cResult = 12000
+        #tablas.tablaEra[self.auxPn3]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
+        tablas.agregarV(self.auxPn3,self.auxTipo, self.rtr )
         pass
+
 
     @_('ID')
     def pn3(self, p):
         self.auxPn3 = p.ID
-        tablas.scope = self.auxPn3
-        tablas.memoriaV += 1000
-        tablas.memoriaF += 1000 
+        TablaFV.scope = self.auxPn3
+        tablas.agregarC(p.ID, self.auxTipo)
+        #                      var fl | var int|var bool|var char|temp float|temp int|float bool
+        tablas.tablaEra[p.ID]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
+        
 
-    @_('var', '')
-    def fun2(self, p):
-        pass
+    #@_('var', '')
+    #def fun2(self, p):
+    #    pass
 
     @_('estatutos', '')
     def fun3(self, p):
@@ -228,6 +256,7 @@ class CalcParser(Parser):
 
     #callvoid---------------------------------------------------
     auxp = 1
+    auxCall = ''
     @_(' pnCall "(" exp end pnParam callVoid2 ")" ', 'pnCall "("  ")" ')
     def callVoid(self,p):
         cuad.agregarCuadCall('gosub', self.auxCall, 0)
@@ -299,34 +328,44 @@ class CalcParser(Parser):
     
     
     #read -------------------------------------------------------
-    @_('READ "(" ID read2 ")" ')
+    auxRead = 0
+    @_('READ "("  ")" ', 'READ "(" read4  ")" ')# checar que onda
     def read(self,p):
+        cuad.agregarCuadF1( cuad.resultado, p[0])
         pass
 
-    @_('"," ID  read2','')
+    @_('read2','read3' )# checar que onda
+    def read4(self,p):
+        #self.auxRead = p[0]
+        #cuad.resultado = p[0]
+        pass
+
+    @_(' CSTRING' )# checar que onda
     def read2(self,p):
-        pass
-
-    #write-------------------------------------------------------
-    @_('WRITE "(" write2 ")" ')
-    def write(self,p):
-        cuad.agregarCuadF(cuad.resultado, 'write')
-        pass
-
-    @_(' write4  write3 ', 'exp end write3')
-    def write2(self,p):
-        
-        pass
-
-    @_('"," write4 write3 ', ' "," exp end write3', '')
-    def write3(self,p):
-        pass
-
-    @_(' CSTRING ')
-    def write4(self,p):
+        #self.auxRead = p[0]
         cuad.resultado = p[0]
         pass
 
+    @_('exp end' )# checar que onda
+    def read3(self,p):
+        pass
+
+    
+
+    #write-------------------------------------------------------
+    @_('WRITE "(" write2 ")" ','WRITE "(" write3 ")" ')
+    def write(self,p):
+        cuad.agregarCuadF1(cuad.resultado, 'write')
+        pass
+
+    @_('exp end ')
+    def write2(self,p):
+        pass
+
+    @_(' CSTRING ')
+    def write3(self,p):
+        cuad.resultado = p[0]
+        pass
 
 
     #fors----------------------------------------------------
@@ -417,46 +456,76 @@ class CalcParser(Parser):
     #color --------------------------------------------------
     @_('COLOR "(" PALETA ")"')
     def color(self,p):
+        cuad.agregarCuadF1( p[2], p[0])
         pass
 
     #CLEAR---------------------------------------------------
     @_('CLEAR "(" ")"')
     def clear(self,p):
+        cuad.agregarCuadF1(  p[0])
         pass
     
     #pendow------------------------------------------------
     @_('PENDOWN "(" ")"')
     def pendown(self,p):
+        cuad.agregarCuadF0( p[1])
         pass
     
     #PENUP----------------------------------------------
     @_('PENUP "(" ")"')
     def penup(self,p):
+        cuad.agregarCuadF0( p[1])
         pass
 
     #ARC----------------------------------------------------
-    @_('ARC "(" exp end "," exp end ")"')
+    arc1=0
+    arc2=0
+    @_('auxArc ARC "(" exp end "," exp end ")"')
     def arc(self,p):
+        cuad.agregarCuadF2(self.arc1, self.arc2, p[1])
+        self.arc1 = 0
+        self.arc2 = 0
+        pass
+
+    @_('')
+    def auxArc(self,p):
+        self.arc1 = 0
+        self.arc2 = 0
         pass
 
     #CIRCLE-------------------------------------------------
     @_('CIRCLE "(" exp end ")"')
     def circle(self,p):
+        cuad.agregarCuadF1( cuad.resultado, p[0])
         pass
 
     #POINT---------------------------------------------------
-    @_('POINT "(" exp end "," exp end ")"')
+    @_('POINT "(" exp end ")" ')
     def point(self,p):
+        cuad.agregarCuadF1( cuad.resultado, p[0])
         pass
 
     #SIZE-------------------------------------------------
     @_('SIZE "(" exp end ")"')
     def size(self,p):
+        cuad.agregarCuadF1( cuad.resultado, p[0])
         pass
 
     #line--------------------------------------------------
-    @_('LINE "(" exp end "," exp end  ")"')
+    line1 = 0
+    line2 = 0
+    @_('auxLine LINE "(" exp end "," exp end  ")"')
     def line(self,p):
+        cuad.agregarCuadF2(self.line1, self.line2, p[1])
+        self.line1 = 0
+        self.line2 = 0
+        pass
+
+
+    @_('')
+    def auxLine(self,p):
+        self.line1 = 0
+        self.line2 = 0
         pass
 
     #EXPRESION ---------------------------------------------
@@ -481,6 +550,7 @@ class CalcParser(Parser):
     @_('RETURN "(" exp end ")" ')
     def return0(self,p):    
         cuad.agregarCuadCall('return', 0, cuad.resultado)
+        #self.rtr =  cuad.resultado
         pass
 
 
@@ -558,10 +628,17 @@ class CalcParser(Parser):
     @_('ID')
     def varnum2(self,p):
         if(tablas.checa(p[0])):
-            #auxT = tablas.extraerValor(p[0])
-            #self.auxValor = auxT
+            self.rtr =  cuad.resultado
+            if(self.line1 == 0):
+                self.line1 =  cuad.resultado
+            elif(self.line2 == 0):
+                self.line2 =  cuad.resultado
+
+            if(self.arc1 == 0):
+                self.arc1 =  cuad.resultado
+            elif(self.arc2 == 0):
+                self.arc2 =  cuad.resultado
             cuad.agregaCons(p[0])
-            #cuad.resultado = auxT
         else: 
             print("la variable no esta")
         pass
@@ -572,15 +649,35 @@ class CalcParser(Parser):
 
     @_('CTEI')
     def varnum4(self,p):
+        self.rtr =  p[0]
         tablas.agregarC(p[0], 'int')
-        #tablas.memoriaC
-        cuad.agregaCons(TablaFV.memoriaC -1 )
+        cuad.agregaCons(TablaFV.cInt)
+        if(self.arc1 == 0):
+            self.arc1 =  tablas.m
+        elif(self.arc2 == 0):
+            self.arc2 =  tablas.m
+        if(self.line1 == 0):
+            self.line1 =  tablas.m
+        elif(self.line2 == 0):
+            self.line2 =  tablas.m
+
         pass
 
     @_('CTEF')
     def varnum5(self,p):
+        self.rtr =  p[0]
         tablas.agregarC(p[0], 'float')
-        cuad.agregaCons(TablaFV.memoriaC-1)
+        cuad.agregaCons(TablaFV.cFloat)
+        if(self.arc1 == 0):
+                #self.arc1 =  p[0]
+            self.arc1 =  tablas.m
+        elif(self.arc2 == 0):
+                #self.arc2 =  p[0]
+            self.arc2 =  tablas.m
+        if(self.line1 == 0):
+            self.line1 =  tablas.m
+        elif(self.line2 == 0):
+            self.line2 =  tablas.m
         pass
 
     #VAR --------------------------------------------------
@@ -613,41 +710,41 @@ if __name__ == '__main__':
     parser = CalcParser()
     cuad = cuad()
 
-    
+    archivo = input("que archivo?")
+    archivo2 = open( archivo, 'r')
+    linea = ""
 
+    for s in archivo2:
+        linea += s.strip()
 
-    while True:
-        try:
-            text = input('---> ')
-            parser.parse(lexer.tokenize(text))
-            
-            
-            count = 1
-            count2 = 0
-            count3 = 1
-            count4 = 0
-            print("tabla  de variables:")
-            for line in range(len(tablas.tablaV)):
-                print(count," : ", tablas.tablaV[count])
-                count =   count  + 1
+    parser.parse(lexer.tokenize(linea))    
+    count = 1
+    count2 = 0
+    count3 = 1
+    count4 = 0
+    print("tabla  de variables:")
+    for line in range(len(tablas.tablaV)):
+        print(count," : ", tablas.tablaV[count])
+        count =   count  + 1
 
-            print("tabla  de constantes:")
-            for line in range(len(TablaFV.tablaC)):
-                print(count4," : ", TablaFV.tablaC[count4])
-                count4 =   count4  + 1
+    print("tabla  de constantes:")
+    for line in range(len(TablaFV.tablaC)):
+        print(count4," : ", TablaFV.tablaC[count4])
+        count4 =   count4  + 1
 
-            print("tabla funciones:")   
-            for line in range(len(tablas.tablaF)):
-                print(count2 +1," : ", tablas.tablaF[count2])
-                count2 =   count2 +1
+    print("tabla funciones:")   
+    for line in range(len(tablas.tablaF)):
+        print(count2 +1," : ", tablas.tablaF[count2])
+        count2 =   count2 +1
 
-            print("tabla cuadruplos:")   
-            for line in range(len(cuad.tablaQ)):
-                print(count3 ," : ", cuad.tablaQ[count3])
-                count3 =   count3 + 1
-          
-        except EOFError:
-            break
+    print("tabla cuadruplos:")   
+    for line in range(len(cuad.tablaQ)):
+        print(count3 ," : ", cuad.tablaQ[count3])
+        count3 =   count3 + 1
+    print("tabla era:")
+    print(tablas.tablaEra)
+    archivo2.close()
+        
 
     
     

@@ -1,0 +1,42 @@
+programa p : 
+void module fun(int e){
+    var int : t;
+    if(e < 8) then {
+        e = 9;
+    };
+    e = 9+8;
+};
+int module fun(int e){
+    var int : t;
+    if(e < 8) then {
+        e = 9;
+    };
+    e = 9+8;
+    return(54)
+};
+void module fun2(float f){
+    var int : t;
+    if(f < 8) then {
+        f = 9;
+    }else{
+        var int : o;
+    };
+    if(t < 23)then
+    {
+        t = 6.3+5;
+    };
+    e = 9+8;
+    var float: f2;
+};
+main {
+    fun(2+6 *5);
+    var int : y;
+    y = 9+5;
+    x=56+8;
+    write("1");
+    color(red);
+    arc(2,5);
+    circle(4);
+    line(100,200);
+    read(54);
+}
