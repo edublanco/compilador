@@ -6,8 +6,10 @@ cFloat = 5000
 cInt = 6000
 cBool = 7000
 cChar = 8000  
+cString = 16000
 class  tablas():
     tablaF = {}
+    tablaMV = {} # MAIN VARIABLES
     tablaEra = {}
     i = 0 
     #scope = "global"
@@ -24,7 +26,7 @@ class  tablas():
     def agregarF(self, nombre, tipo, valor):  
         self.tablaF[self.i]= {'name': nombre, 'type': tipo, 'value': valor, 'memoria' : self.memoriaF}
         self.i += 1
-        
+
     m = 0
     def agregarC(self, valor, tipo):  
         global k
@@ -32,6 +34,7 @@ class  tablas():
         global cInt
         global cBool
         global cChar
+        global cString
         global tablaC 
          
         if(tipo == 'float'):
@@ -46,6 +49,9 @@ class  tablas():
         elif(tipo == 'bool'):
             cBool +=1 
             self.m = cBool
+        elif(tipo == 'string'):
+            cString +=1 
+            self.m = cString
         
         tablaC[k]= {'type': tipo, 'value': valor, 'memoria' : self.m}
         k = k + 1
@@ -58,6 +64,26 @@ class  tablas():
                 return True
             w +=1
 
+    def agregarValorMV(self,memoria, valor):
+        w = 1
+        while(w <= len(self.tablaMV)):
+            if (self.tablaMV[w]['memoria'] == memoria):
+                #print("valor: ", valor)
+                self.tablaMV[w]['value'] = valor
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+
+    def extraerValorMV(self, memoria):
+        w = 1
+        auxValor =''
+        while(w <= len(self.tablaMV)):
+            if (self.tablaMV[w]['memoria'] == memoria):
+                #print("valor: ", valor)
+                auxValor = self.tablaMV[w]['value'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+        return auxValor
+
     def agregarValor(self,nombre, valor):
         w = 1
         while(w <= len(self.tablaV)):
@@ -66,6 +92,8 @@ class  tablas():
                 self.tablaV[w]['value'] = valor
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
             w +=1
+    
+    
 
     def extraerValor(self, nombre):
         w = 1
@@ -74,6 +102,17 @@ class  tablas():
             if (self.tablaV[w]['name'] == nombre):
                 #print("valor: ", valor)
                 auxTipo = self.tablaV[w]['value'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+        return auxTipo
+
+    def extraerValorC(self, memoria):
+        w = 0
+        auxTipo =''
+        while(w < len(tablaC)):
+            if (tablaC[w]['memoria'] == memoria):
+                #print("valor: ", valor)
+                auxTipo = tablaC[w]['value'] 
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
             w +=1
         return auxTipo
@@ -101,19 +140,35 @@ class  tablas():
             #print("WACHA: ",tablaC)
         return auxVal
 
-    def buscarTypeV(self, nombre):
+    def buscarTypeV(self, memoria):
         w = 1
         auxVal =''
+        
         while(w <= len(self.tablaV)):
-            #if (self.tablaV[w]['nombre'] == nombre):
+            
+            if (self.tablaV[w]['memoria'] == memoria):
+                print("me llamo: ",self.tablaV[w]['name'] )
                 #print("valor: ", valor)
-            try:
                 auxVal = self.tablaV[w]['type'] 
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
-            except:
-                pass
             w +=1
+            #print("WACHA: ",tablaC)
         return auxVal
+
+    def buscarTypeMV(self, nombre):
+        w = 1
+        auxVal =''
+        
+        while(w <= len(self.tablaMV)):
+            print("me llamo: ",self.tablaMV[w]['name'] )
+            if (self.tablaMV[w]['name'] == nombre):
+                #print("valor: ", valor)
+                auxVal = self.tablaMV[w]['type'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+            #print("WACHA: ",tablaC)
+        return auxVal
+
     
     def buscarF(self, nombre):
         w = 0
@@ -131,23 +186,59 @@ class  tablas():
         return False
 
 
+    
+
+    def agregarMV(self):
+        i = 1
+        w = 1
+        print("len de tablav",len(self.tablaV) )
+        while(i <= len(self.tablaV)):
+            if(self.tablaV[i]['scope'] == "global"):
+                print("---------------entre al scope---------------------")
+                self.tablaMV[w] = {'name': 0, 'type': 0, 'value': 0, 'scope': 0, 'memoria' : 0}
+                self.tablaMV[w]['name'] = self.tablaV[i]['name']
+                self.tablaMV[w]['type'] = self.tablaV[i]['type']
+                self.tablaMV[w]['value'] = self.tablaV[i]['value']
+                self.tablaMV[w]['scope'] = self.tablaV[i]['scope']
+                self.tablaMV[w]['memoria'] = self.tablaV[i]['memoria']
+
+                #self.tablaV[self.j] = {'name': nombre, 'type': tipo, 'value': valor, 'scope': scope, 'memoria' : self.memoriaV}
+                #copiar a tabla main de variables
+                w +=1
+            i +=1
+
     funFloat = 1000
     funInt = 2000
     funBool= 3000
     funChar = 4000
+    gVFloat = 12000
+    gVInt = 13000
+    gVBool= 14000
+    gVChar = 15000
+
     def agregarV(self, nombre, tipo, valor):
         print("scope", scope)
         self.j += 1
 
         # si la primera variable es en global
-        if(scope == "global"  and self.memoriaV < 1000):
-            self.memoriaV += 1
-            self.auxMemVarG += 1
-            self.fNoHayGlobal = False
-        # cuando vuelve a global 
-        elif(scope == "global" and self.memoriaV >= 1000 ):
-            self.memoriaV = self.auxMemVarG + 1
-        # cuando esta dentro de un scope no global
+        if(scope == "global"  ):
+            if(tipo == 'float'):
+                self.gVFloat += 1 
+                self.memoriaV = self.gVFloat
+               
+            elif(tipo == 'int'):
+                print("entre al int")
+                self.gVInt += 1 
+                self.memoriaV = self.gVInt
+               
+            elif(tipo == 'bool'):
+                self.gVBool += 1 
+                self.memoriaV = self.gVBool
+               
+            elif(tipo == 'char'):
+                self.gVChar += 1 
+                self.memoriaV = self.funChgVCharar
+               
         elif( scope != "global"):
             if(tipo == 'float'):
                 self.funFloat += 1 

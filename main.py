@@ -3,6 +3,7 @@ from collections import defaultdict
 from TablaFV  import * 
 from Cuadruplos  import *
 from CuboSemantico import cubo
+from MaquinaVT  import *
 
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
@@ -77,6 +78,7 @@ class CalcParser(Parser):
     #Programa -----------------------------------------------------
     @_('PROGRAMA pnp ID ":"  programa2')
     def programa(self, p):
+        tablas.agregarMV()
         pass
 
     @_('')
@@ -96,10 +98,12 @@ class CalcParser(Parser):
     def main(self, p):
         TablaFV.scope = "global"
         cuad.agregarCuadMain('end')
+        
         pass
 
     @_('')
     def pnp2(self, p):
+        
         cuad.agregarCuadMain('gotoTC')
         pass
 
@@ -128,17 +132,20 @@ class CalcParser(Parser):
         cuad.iResult = 10000
         cuad.bResult = 11000
         cuad.cResult = 12000
+        TablaFV.scope = "global" 
+        #tablas.tablaV.clear()
         #tablas.tablaEra[self.auxPn2]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
 
         pass
 
     @_('ID')
     def pn2(self, p):
+        #tablas.tablaV.clear()
         self.auxPn2 = p.ID
         TablaFV.scope = self.auxPn2
         #                      var fl | var int|var bool|var char|temp float|temp int|float bool
         tablas.tablaEra[p.ID]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
-
+        
         
     #fun-----------------------------------------------------------
     auxPn3 = ""
@@ -155,8 +162,12 @@ class CalcParser(Parser):
         cuad.iResult = 10000
         cuad.bResult = 11000
         cuad.cResult = 12000
+        #tablas.tablaV.clear()#-----
         #tablas.tablaEra[self.auxPn3]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
+        #agregar el resultado de return a una variable global
+        TablaFV.scope = "global" 
         tablas.agregarV(self.auxPn3,self.auxTipo, self.rtr )
+        
         pass
 
 
@@ -164,7 +175,7 @@ class CalcParser(Parser):
     def pn3(self, p):
         self.auxPn3 = p.ID
         TablaFV.scope = self.auxPn3
-        tablas.agregarC(p.ID, self.auxTipo)
+        #tablas.agregarC(p.ID, self.auxTipo)
         #                      var fl | var int|var bool|var char|temp float|temp int|float bool
         tablas.tablaEra[p.ID]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
         
@@ -246,9 +257,22 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
     
-    @_('CSTRING ','LETRA', 'asignacion3 ') # CHECAR CON STRINGS
+    @_('asignacion5 ','asignacion4', 'asignacion3 ') # CHECAR CON STRINGS
     def asignacion2(self,p):
-        cuad.resultado = p[0]
+        pass
+        #tablas.agregarC(p[0], 'char')
+        #cuad.resultado = tablas.m
+    @_('CSTRING ') # CHECAR CON STRINGS
+    def asignacion5(self,p):
+        tablas.agregarC(p[0], 'string')
+        cuad.resultado = tablas.m
+        pass
+
+    @_('LETRA') # CHECAR CON STRINGS
+    def asignacion4(self,p):
+        tablas.agregarC(p[0], 'char')
+        cuad.resultado = tablas.m
+        pass
 
     @_('callVoid') # CHECAR CON STRINGS
     def asignacion3(self,p):
@@ -334,26 +358,31 @@ class CalcParser(Parser):
         cuad.agregarCuadF1( cuad.resultado, p[0])
         pass
 
-    @_('read2','read3' )# checar que onda
+    @_('read2','read3', 'read5' )# checar que onda
     def read4(self,p):
         #self.auxRead = p[0]
         #cuad.resultado = p[0]
-        pass
-
-    @_(' CSTRING' )# checar que onda
-    def read2(self,p):
-        #self.auxRead = p[0]
-        cuad.resultado = p[0]
         pass
 
     @_('exp end' )# checar que onda
     def read3(self,p):
         pass
 
-    
+    @_('LETRA') # CHECAR CON STRINGS
+    def read5(self,p):
+        tablas.agregarC(p[0], 'char')
+        cuad.resultado = tablas.m
+        pass
+
+    @_(' CSTRING' )# checar que onda
+    def read2(self,p):
+        #self.auxRead = p[0]
+        tablas.agregarC(p[0], 'string')
+        cuad.resultado = tablas.m
+        pass
 
     #write-------------------------------------------------------
-    @_('WRITE "(" write2 ")" ','WRITE "(" write3 ")" ')
+    @_('WRITE "(" write2 ")" ','WRITE "(" write3 ")" ' ,'WRITE "(" write4 ")" ')
     def write(self,p):
         cuad.agregarCuadF1(cuad.resultado, 'write')
         pass
@@ -364,8 +393,17 @@ class CalcParser(Parser):
 
     @_(' CSTRING ')
     def write3(self,p):
-        cuad.resultado = p[0]
+        tablas.agregarC(p[0], 'string')
+        cuad.resultado = tablas.m
         pass
+
+    @_('LETRA') # CHECAR CON STRINGS
+    def write4(self,p):
+        tablas.agregarC(p[0], 'char')
+        cuad.resultado = tablas.m
+        pass
+    
+    
 
 
     #fors----------------------------------------------------
@@ -406,6 +444,7 @@ class CalcParser(Parser):
         if(tablas.checa(p[0])):
             #tablas.agregarValor(p[0], cuad.resultado)
             auxM = tablas.buscarM(p[0]) 
+            self.pExp = auxM
             cuad.agregarCuadAsign(auxM,cuad.resultado, '=') 
         else: 
             print("la variable no esta")
@@ -413,7 +452,8 @@ class CalcParser(Parser):
 
     @_('')
     def pExp1(self,p):
-        self.pExp = cuad.resultado
+        #self.pExp = cuad.resultado
+        
         pass
     @_('')
     def sExp2(self,p):
@@ -627,7 +667,7 @@ class CalcParser(Parser):
 
     @_('ID')
     def varnum2(self,p):
-        if(tablas.checa(p[0])):
+        if(tablas.checa(p[0]) ):
             self.rtr =  cuad.resultado
             if(self.line1 == 0):
                 self.line1 =  cuad.resultado
@@ -708,6 +748,7 @@ if __name__ == '__main__':
     tablas = tablas()
     lexer = CalcLexer()
     parser = CalcParser()
+    maquina = maquina()
     cuad = cuad()
 
     archivo = input("que archivo?")
@@ -722,6 +763,7 @@ if __name__ == '__main__':
     count2 = 0
     count3 = 1
     count4 = 0
+    count5 = 1
     print("tabla  de variables:")
     for line in range(len(tablas.tablaV)):
         print(count," : ", tablas.tablaV[count])
@@ -741,9 +783,17 @@ if __name__ == '__main__':
     for line in range(len(cuad.tablaQ)):
         print(count3 ," : ", cuad.tablaQ[count3])
         count3 =   count3 + 1
+
+    print("tabla  de variables de main:")
+    for line in range(len(tablas.tablaMV)):
+        print(count5," : ", tablas.tablaMV[count5])
+        count5 =   count5  + 1
+
     print("tabla era:")
     print(tablas.tablaEra)
     archivo2.close()
+
+    maquina.procesos()
         
 
     

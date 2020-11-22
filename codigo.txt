@@ -6,6 +6,7 @@ void module fun(int e){
     };
     e = 9+8;
 };
+var int : tglobal;
 int module fun(int e){
     var int : t;
     if(e < 8) then {
@@ -14,6 +15,7 @@ int module fun(int e){
     e = 9+8;
     return(54)
 };
+var int : tfglobal;
 void module fun2(float f){
     var int : t;
     if(f < 8) then {
@@ -31,6 +33,7 @@ void module fun2(float f){
 main {
     fun(2+6 *5);
     var int : y;
+    var float : fm;    var float : we;
     y = 9+5;
     x=56+8;
     write("1");
@@ -39,4 +42,32 @@ main {
     circle(4);
     line(100,200);
     read(54);
+    f = "asdasd";
+    read("sadasd");
 }
+
+write("hgfhg");
+
+    var int : w;
+    while( w<= 5) do 
+    {   
+        write("la w es: ");
+        write(w);
+        w = w+1;
+    };
+
+    var int :  f;
+    for f = 1 to 4 do
+    {
+        
+        write("entre al for");
+        write(f);
+        f = f +1;
+    };
+    write(i);
+    if( e < 3)then{
+        i = 34.0;
+        write("si entre");
+    }else{
+        write("entre al else");
+    };

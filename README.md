@@ -70,6 +70,36 @@ programa m :  var int: a; main{  if(a < 2)then {a =2-8;    if(a<2)then{ a = 9;} 
 - Se implementaron los tipos 
 - Se corrigieron errores
 
+# doceavo y treceavo avance 
+- se implemento la maquina virtual para la aritmetica, ifs,whiles, fors y write
+- a todas las direcciones se les asigno respectivamente una direccion simbolica de lo que son:
+	- vars locales:
+		* float: 1001 - 2000
+		* int: 2001 -3000
+		* bool: 3001 - 4000
+		* char: 4001 -5000
+	- constantes:
+		* float: 5001 - 6000
+		* int: 6001 -7000
+		* bool: 7001 - 8000
+		* char: 8001 -9000
+		* str: 16001 - 17000
+	- temps:
+		* float: 9001 - 10000
+		* int: 10001 -11000
+		* bool: 11001 - 12000
+	- vars globales:
+		* float: 12001 - 13000
+		* int: 13001 - 14000
+		* bool: 14001 - 15000
+		* char: 15001 - 16000
+- creacion del ERA y la tabla qe va a mandar toda la info de las funciones (tablaEra)
+- creacio de la tabla que le manda la informacion de las variables globales a la maquina virtual (tablaMV)
+- creacion de la tabla de temporales para maquina (tempsMF)
+- correccion de errores en el for
+
+
+
 # Ejemplo del leguaje para ver las tablas:
 
 programa raul : var int : a; var float : b; void module funv (int ejem )var int: d{clear(); var int : c;};float module ejem2 (float r, int javier) var int : j {clear(); var int: e; return(23)}; int module ejem3(char w){var int :s; return(2)};main{ var int :h; var char : l;}

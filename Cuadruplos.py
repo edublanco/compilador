@@ -93,30 +93,78 @@ class  cuad():
             self.agregaOp('end') 
 
     def agregarCuad(self, opIzq, opDer, operando):  
+        
+        print("operando: ", operando)
+        print("opIzq: ", opIzq)
+        print("opDer: ", opDer)
+
+
         opeNuevo = 0
         tipoFinal = ''
+        auxIzq = opIzq
+        auxDer = opDer
+
 
         if(isinstance(opIzq, str)):
+            print("entre y soy :", opIzq)
             opIzq = tablas.buscarM(tablas, opIzq)
             tipoIzq = tablas.buscarTypeV(tablas, opIzq)
         else:   
+        #    tipoIzq = ''
             tipoIzq = tablas.buscarTypeC(tablas, opIzq)
 
         if(isinstance(opDer, str)):
             opDer = tablas.buscarM(tablas, opDer)
             tipoDer = tablas.buscarTypeV(tablas, opDer)
         else:
+        #    tipoDer = ''
             tipoDer = tablas.buscarTypeC(tablas, opDer)
         
         if(tipoDer == ''):
-            tipoDer = self.tempType
+            if(auxDer >= 5000 and auxDer < 6000  ):
+                tipoDer = 'float'
+                #auxIzq = float(tablas.extraerValorC(tablas,izq)) 
+            elif(auxDer >= 9000 and auxDer < 10000):#---------------------------------------------- aqui
+                tipoDer = 'float'
+                #izq = float(self.tempsMF[izq]) 
+            elif(auxDer >= 12000 and auxDer < 13000):#---------------------------------------------- aqui
+                tipoDer = 'float'
+            elif( auxDer >= 6000 and auxDer < 7000 ):
+                tipoDer = 'int'
+                #auxIzq = int(tablas.extraerValorC(tablas,izq))
+            elif(auxDer >= 10000 and auxDer < 11000):#---------------------------------------------- aqui
+                tipoDer = 'int'
+            elif(auxDer >= 13000 and auxDer < 14000):#---------------------------------------------- aqui
+                tipoDer = 'int'
+            #tipoDer = self.tempType
 
         if(tipoIzq == ''):
-            tipoIzq = self.tempType
+            if(auxIzq >= 5000 and auxIzq < 6000  ):
+                tipoIzq = 'float'
+                #auxIzq = float(tablas.extraerValorC(tablas,izq)) 
+            elif(auxIzq >= 9000 and auxIzq < 10000):#---------------------------------------------- aqui
+                tipoIzq = 'float'
+            elif(auxIzq >= 12000 and auxIzq < 13000):#---------------------------------------------- aqui
+                tipoIzq = 'float'
+                #izq = float(self.tempsMF[izq]) 
+            elif( auxIzq >= 6000 and auxIzq < 7000 ):
+                tipoIzq = 'int'
+                #auxIzq = int(tablas.extraerValorC(tablas,izq))
+            elif(auxIzq >= 10000 and auxIzq < 11000):#---------------------------------------------- aqui
+                tipoIzq = 'int'
+            elif(auxIzq >= 13000 and auxIzq < 14000):#---------------------------------------------- aqui
+                tipoIzq = 'int'
+                #auxIzq = int(self.tempsMF[auxIzq])
+            #tipoIzq = self.tempType
 
         if(operando == '+'):
+
+            print("en la parte der: ",tipoDer)
+            print("en la parte izq: ",tipoIzq)
+            
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['+']
             #tablas.agregarC( tablas, 0, tipoFinal)
+            #print("tipo final:",tipoFinal)
             if(tipoFinal == 'int'):
                 self.iResult += 1
                 opeNuevo = self.iResult
@@ -140,6 +188,7 @@ class  cuad():
 
         elif(operando == '*'):
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['*']
+           
             #tablas.agregarC( tablas, 0, tipoFinal)
             if(tipoFinal == 'int'):
                 self.iResult += 1
@@ -152,7 +201,7 @@ class  cuad():
 
         elif(operando == '/'):
             tipoFinal = cubo.cuboS[tipoIzq][tipoDer]['/']
-            tablas.agregarC( tablas, 0, tipoFinal)
+            #tablas.agregarC( tablas, 0, tipoFinal)
             if(tipoFinal == 'int'):
                 self.iResult += 1
                 opeNuevo = self.iResult
@@ -181,7 +230,7 @@ class  cuad():
 
         if(operando != 'end') :
             self.sTemp.append(opeNuevo)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         elif(operando == 'end'):
             self.resultado = opeNuevo
@@ -190,7 +239,7 @@ class  cuad():
     def agregarCuadAsign(self, opIzq, opDer, operando):
         opeNuevo = opIzq
         opIzq =  opDer
-        #opeNuevo = opDer
+        
         opDer = 0  
 
         self.tablaQ[self.i] = {
@@ -200,7 +249,7 @@ class  cuad():
             'opNuevo': opeNuevo    
             }
         self.resultado = opeNuevo
-        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
     def agregarCuadF0(self,  funcion):
@@ -215,7 +264,7 @@ class  cuad():
             }
 
         self.resultado = opeNuevo
-        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
     def agregarCuadF1(self, exp, funcion):
@@ -230,7 +279,7 @@ class  cuad():
             }
 
         self.resultado = opeNuevo
-        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
     def agregarCuadF2(self, exp1, exp2, funcion):
@@ -245,23 +294,23 @@ class  cuad():
             }
 
         self.resultado = opeNuevo
-        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
     
     def agregarCuadExpresion(self, exp1,exp2, operando):
         opeNuevo = 0
 
-        print("exp1: ", exp1)
-        print("exp2: ", exp2)
+        #print("exp1: ", exp1)
+        #print("exp2: ", exp2)
         if(isinstance(exp1, str)):
             exp1 = tablas.buscarM(tablas, exp1)
 
         if(isinstance(exp2, str)):
             exp1 = tablas.buscarM(tablas, exp2)     
 
-        print("new exp1: ", exp1)
-        print("new exp2: ", exp2)          
+        #print("new exp1: ", exp1)
+        #print("new exp2: ", exp2)          
 
         if(operando == '<'):
             self.bResult += 1
@@ -270,7 +319,7 @@ class  cuad():
                 tablas.tablaEra[TablaFV.scope][11000] +=1
 
         elif(operando == '>'):
-            sself.bResult += 1
+            self.bResult += 1
             opeNuevo = self.bResult
             if(TablaFV.scope != "global"):
                 tablas.tablaEra[TablaFV.scope][11000] +=1
@@ -309,7 +358,7 @@ class  cuad():
 
     
         self.resultado = opeNuevo
-        print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+        #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
         self.i += 1
 
     sJumps = []
@@ -326,7 +375,7 @@ class  cuad():
             'opNuevo': 0    
             }
             self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
   
@@ -349,7 +398,7 @@ class  cuad():
             }
 
             self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
         elif(operando == 'gotoTC'):
@@ -369,7 +418,7 @@ class  cuad():
             'opNuevo': 0    
             }
             self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
     
         elif(operando == 'gotoFC'):
@@ -384,11 +433,11 @@ class  cuad():
             'opDer': 0, 
             'opNuevo': self.sJumps.pop()    
             }
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
         elif(operando == 'gotoTC'):
-            print("slef i en gotoc del while: ",self.i)  
+            #print("slef i en gotoc del while: ",self.i)  
             self.sJumps.append(self.i)
             pass
 
@@ -397,26 +446,26 @@ class  cuad():
         
         if(operando == 'gotoF'):
             self.tablaQ[self.i] = {
-            'operando': goto ,
+            'operando': 'gotoFF' ,
             'opIzq': 0, 
             'opDer': 0, 
-            'opNuevo': self.sJumps.pop()    
+            'opNuevo': self.sJumps.pop()   +1
             }
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         elif(operando == 'gotoFC'):
-            print("slef i en gotoc del for: ",self.i)  
+            #print("slef i en gotoc del yiii for: ",self.i)  
             self.sJumps.append(self.i)
-            pass
+            
         elif(operando == 'gotoT'):
             self.tablaQ[self.i] = {
-            'operando': goto ,
+            'operando':'gotoTF'  ,
             'opIzq': self.resultado, 
             'opDer': 0, 
             'opNuevo': 0    
             }
             self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
         elif(operando == 'gotoTC'):
@@ -435,7 +484,7 @@ class  cuad():
             'opNuevo': 0    
             }
             self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
             self.i += 1
         
         elif(operando == 'end'):
@@ -445,12 +494,13 @@ class  cuad():
             'opDer': 0, 
             'opNuevo': 0    
             }
-            print("prueba de tipos:")
-            i = cubo.cuboS['int']['float']['*']
-            print("prueba de tipos es:", i)
-            self.sJumps.append(self.i)
-            print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
-            self.i += 1
+#-------------------- ??????????????? ---------------------------------
+            #print("prueba de tipos:")
+            #i = cubo.cuboS['int']['float']['*']
+            #print("prueba de tipos es:", i)
+            #self.sJumps.append(self.i)
+            #print("tablaQ[",self.i,"]: ",self.tablaQ[self.i])
+            #self.i += 1
 
         elif(operando == 'gotoTC'):
             dire = self.sJumps.pop()
