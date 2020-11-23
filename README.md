@@ -98,7 +98,10 @@ programa m :  var int: a; main{  if(a < 2)then {a =2-8;    if(a<2)then{ a = 9;} 
 - creacion de la tabla de temporales para maquina (tempsMF)
 - correccion de errores en el for
 
-
+# catorceavo avance 
+- implementacion de la maquina virtual hasta funciones
+- ajuste para que los calls regresen valores
+- correccion de errores
 
 # Ejemplo del leguaje para ver las tablas:
 

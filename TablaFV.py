@@ -84,6 +84,17 @@ class  tablas():
             w +=1
         return auxValor
 
+    def extraerValorCM(self, memoria):
+        w = 1
+        auxValor =''
+        while(w <= len(self.tablaV)):
+            if (self.tablaV[w]['memoria'] == memoria):
+                #print("valor: ", valor)
+                auxValor = self.tablaV[w]['name'] 
+                #print("y su valor es: ",self.tablaV[w]['value'])# : valor
+            w +=1
+        return auxValor
+
     def agregarValor(self,nombre, valor):
         w = 1
         while(w <= len(self.tablaV)):
@@ -147,7 +158,7 @@ class  tablas():
         while(w <= len(self.tablaV)):
             
             if (self.tablaV[w]['memoria'] == memoria):
-                print("me llamo: ",self.tablaV[w]['name'] )
+                #print("me llamo: ",self.tablaV[w]['name'] )
                 #print("valor: ", valor)
                 auxVal = self.tablaV[w]['type'] 
                 #print("y su valor es: ",self.tablaV[w]['value'])# : valor
@@ -160,7 +171,7 @@ class  tablas():
         auxVal =''
         
         while(w <= len(self.tablaMV)):
-            print("me llamo: ",self.tablaMV[w]['name'] )
+           # print("me llamo: ",self.tablaMV[w]['name'] )
             if (self.tablaMV[w]['name'] == nombre):
                 #print("valor: ", valor)
                 auxVal = self.tablaMV[w]['type'] 
@@ -173,10 +184,10 @@ class  tablas():
     def buscarF(self, nombre):
         w = 0
         #auxMem =''
-        print("la len es: ", len(self.tablaF))
+        #print("la len es: ", len(self.tablaF))
         
         while(w < len(self.tablaF)):
-            print("w es :", w)
+            #print("w es :", w)
             if (self.tablaF[w]['name'] == nombre):
                 #print("valor: ", valor)
                 return True
@@ -186,15 +197,13 @@ class  tablas():
         return False
 
 
-    
-
     def agregarMV(self):
         i = 1
         w = 1
-        print("len de tablav",len(self.tablaV) )
+        #print("len de tablav",len(self.tablaV) )
         while(i <= len(self.tablaV)):
             if(self.tablaV[i]['scope'] == "global"):
-                print("---------------entre al scope---------------------")
+         #       print("---------------entre al scope---------------------")
                 self.tablaMV[w] = {'name': 0, 'type': 0, 'value': 0, 'scope': 0, 'memoria' : 0}
                 self.tablaMV[w]['name'] = self.tablaV[i]['name']
                 self.tablaMV[w]['type'] = self.tablaV[i]['type']
@@ -217,7 +226,7 @@ class  tablas():
     gVChar = 15000
 
     def agregarV(self, nombre, tipo, valor):
-        print("scope", scope)
+        #print("scope", scope)
         self.j += 1
 
         # si la primera variable es en global
@@ -227,7 +236,7 @@ class  tablas():
                 self.memoriaV = self.gVFloat
                
             elif(tipo == 'int'):
-                print("entre al int")
+               # print("entre al int")
                 self.gVInt += 1 
                 self.memoriaV = self.gVInt
                

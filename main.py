@@ -10,7 +10,7 @@ class CalcLexer(Lexer):
     tokens = {  CTEI, CTEF,  ID, CSTRING, MAS, MENOS, INT, 
                 ASIGNACION, IF, ELSE,
                 RELOP, MUL, DIV, PROGRAMA,
-                CHAR, FLOAT, VAR,
+                CHAR, FLOAT, VAR, CALL,
                 MODULE, VOID, RETURN, PALETA,FOR, WHILE,
                 MAIN, TO, DO, WRITE, READ, SIZE, COLOR, CLEAR,
                 PENDOWN, PENUP, ARC, CIRCLE, POINT, LINE, THEN, LETRA}
@@ -33,6 +33,7 @@ class CalcLexer(Lexer):
 
     ID['if'] = IF
     ID['else'] = ELSE
+    ID['call'] = CALL
     ID['int'] = INT
     ID['float'] = FLOAT
     ID['programa'] = PROGRAMA
@@ -141,6 +142,7 @@ class CalcParser(Parser):
     @_('ID')
     def pn2(self, p):
         #tablas.tablaV.clear()
+        cuad.agregarCuadFun(p.ID)
         self.auxPn2 = p.ID
         TablaFV.scope = self.auxPn2
         #                      var fl | var int|var bool|var char|temp float|temp int|float bool
@@ -150,10 +152,12 @@ class CalcParser(Parser):
     #fun-----------------------------------------------------------
     auxPn3 = ""
     auxTipo = ""
+    auxTipoF = ""
+    tipoF = False
     rtr = 0
-    @_('tipo   MODULE  pn3 "(" fun4 ")" "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
+    @_('pnTipo tipo   MODULE  pn3 "(" fun4 ")" "{" fun3  return0 "}"') # hay quedevolver el scope a global en var
     def fun(self, p):
-        tablas.agregarF(self.auxPn3,self.auxTipo, 0) # hay que implementar el cubo semantico para que jale el return
+        tablas.agregarF(self.auxPn3,self.auxTipoF, 0) # hay que implementar el cubo semantico para que jale el return
         tablas.funFloat = 1000
         tablas.funInt = 2000
         tablas.funBool= 3000
@@ -166,14 +170,18 @@ class CalcParser(Parser):
         #tablas.tablaEra[self.auxPn3]= {1000 : 0, 2000:0, 3000: 0, 4000:0  ,9000 : 0, 10000 : 0, 11000: 0}
         #agregar el resultado de return a una variable global
         TablaFV.scope = "global" 
-        tablas.agregarV(self.auxPn3,self.auxTipo, self.rtr )
+        tablas.agregarV(self.auxPn3,self.auxTipoF, self.rtr )
         
         pass
 
+    @_('')
+    def pnTipo(self, p):
+        self.tipoF = True
 
     @_('ID')
     def pn3(self, p):
         self.auxPn3 = p.ID
+        cuad.agregarCuadFun(p.ID)
         TablaFV.scope = self.auxPn3
         #tablas.agregarC(p.ID, self.auxTipo)
         #                      var fl | var int|var bool|var char|temp float|temp int|float bool
@@ -248,6 +256,7 @@ class CalcParser(Parser):
     #auxValor = '' # es para asignar el id, char o str----- falta prpgramar
     #--------------!!!!!!-------------------------------
     @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
+    #@_('ID ASIGNACION asignacion2') 
     def asignacion(self,p):
         if(tablas.checa(p[0])):
             #tablas.agregarValor(p[0], cuad.resultado)
@@ -257,7 +266,8 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
     
-    @_('asignacion5 ','asignacion4', 'asignacion3 ') # CHECAR CON STRINGS
+    #@_('asignacion5 ','asignacion4', 'asignacion3 ') # CHECAR CON STRINGS
+    @_('asignacion5 ','asignacion4') #, 'callVoid'
     def asignacion2(self,p):
         pass
         #tablas.agregarC(p[0], 'char')
@@ -274,37 +284,10 @@ class CalcParser(Parser):
         cuad.resultado = tablas.m
         pass
 
-    @_('callVoid') # CHECAR CON STRINGS
-    def asignacion3(self,p):
-        pass
+
 
     #callvoid---------------------------------------------------
-    auxp = 1
-    auxCall = ''
-    @_(' pnCall "(" exp end pnParam callVoid2 ")" ', 'pnCall "("  ")" ')
-    def callVoid(self,p):
-        cuad.agregarCuadCall('gosub', self.auxCall, 0)
-        self.auxp = 1
-        pass
-
-    @_('ID') #<<<<---------------  checar
-    def pnCall(self,p):
-        if(tablas.buscarF(p[0])):
-            self.auxCall =  p[0]
-            cuad.agregarCuadCall('era', p[0], 0)
-        else:
-            print("no esta")
-        pass
-
-    @_('"," exp end pnParam ', '') #<<<<---------------  checar
-    def callVoid2(self,p):
-        pass
-
-    @_('') #<<<<---------------  checar
-    def pnParam(self,p):
-        cuad.agregarCuadCall('param', self.auxp,  cuad.resultado)
-        self.auxp += 1  
-        pass
+    
 
     #decision---------------------------------------------------
     
@@ -438,7 +421,7 @@ class CalcParser(Parser):
         cuad.agregarCuadFor( 'gotoF')
         pass
 
-    @_('ID ASIGNACION exp end pExp1  ')
+    @_('ID ASIGNACION exp end   ')
     def pnF1(self,p):
         #tablas.agregarV(p.ID,self.auxTipo, 0)
         if(tablas.checa(p[0])):
@@ -446,15 +429,11 @@ class CalcParser(Parser):
             auxM = tablas.buscarM(p[0]) 
             self.pExp = auxM
             cuad.agregarCuadAsign(auxM,cuad.resultado, '=') 
+           
         else: 
             print("la variable no esta")
         pass
 
-    @_('')
-    def pExp1(self,p):
-        #self.pExp = cuad.resultado
-        
-        pass
     @_('')
     def sExp2(self,p):
         self.sExp = cuad.resultado
@@ -611,6 +590,10 @@ class CalcParser(Parser):
         #y guardar el resultado 
         pass
 
+    #@_(' termino  exp3 exp2',' termino  exp4 exp2', '')
+    #def expCV(self,p):
+        #si el anterior no es  *, /, + , * guardar en el stack, si si es hacer la operacion 
+        #y guardar el resultado 
     @_('MAS')
     def exp3(self,p):
         cuad.agregaOp("+")
@@ -618,6 +601,7 @@ class CalcParser(Parser):
     @_('MENOS')
     def exp4(self,p):
         cuad.agregaOp("-")
+
 
     #TERMINO-------------------------------------------
     @_('factor termino2')
@@ -648,7 +632,7 @@ class CalcParser(Parser):
 
     #factor --------------------------------------------------
     #@_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
-    @_('factor2 exp factor3', 'varnum', '')
+    @_('factor2 exp factor3', 'varnum' , '')
     def factor(self,p):
         pass
 
@@ -661,14 +645,59 @@ class CalcParser(Parser):
         cuad.agregaOp(")")
 
     #VARNUM-------------------------------------------------
-    @_('varnum2', 'varnum3')
+    @_('varnum2', 'varnum3','callFun')# callVoid
     def varnum(self,p):
+        pass
+    
+    auxp = 1
+    auxCall = ''
+
+
+
+
+    @_('CALL pnCall "(" exp end pnParam callVoid2   ")" ', ' CALL  pnCall "("  ")" ')
+    def callVoid(self,p):
+        cuad.agregarCuadCall('gosub', self.auxCall, 0)
+        
+        self.auxp = 1
+        pass
+
+    @_(' pnCall "(" exp end pnParam callVoid2 ")"  ', 'pnCall "("  ")" ')
+    def callFun(self,p):
+        cuad.agregarCuadCall('gosub', self.auxCall, 0)
+
+        val = tablas.buscarM(self.auxCall)
+        val = tablas.extraerValorCM(val)
+        print('el valor de callvoi',val )
+        self.rtr =  val
+
+        cuad.agregaCons(val)
+        self.auxp = 1
+        pass
+
+    @_('ID') #<<<<---------------  checar
+    def pnCall(self,p):
+        if(tablas.buscarF(p[0])):
+            self.auxCall =  p[0]
+            cuad.agregarCuadCall('era', p[0], 0)
+        else:
+            print("no esta")
+        pass
+
+    @_('"," exp end pnParam ', '') #<<<<---------------  checar
+    def callVoid2(self,p):
+        pass
+
+    @_('') #<<<<---------------  checar
+    def pnParam(self,p):
+        cuad.agregarCuadCall('param', self.auxp,  cuad.resultado)
+        self.auxp += 1  
         pass
 
     @_('ID')
     def varnum2(self,p):
         if(tablas.checa(p[0]) ):
-            self.rtr =  cuad.resultado
+            self.rtr =  cuad.resultado #-------
             if(self.line1 == 0):
                 self.line1 =  cuad.resultado
             elif(self.line2 == 0):
@@ -678,6 +707,7 @@ class CalcParser(Parser):
                 self.arc1 =  cuad.resultado
             elif(self.arc2 == 0):
                 self.arc2 =  cuad.resultado
+            print("estoy agregando el id ---------------: ", p[0])
             cuad.agregaCons(p[0])
         else: 
             print("la variable no esta")
@@ -741,6 +771,11 @@ class CalcParser(Parser):
     @_('INT',' FLOAT', 'CHAR')
     def tipo(self,p):
         self.auxTipo = p[0]
+        if(self.tipoF == True):
+            self.tipoF = False
+            self.auxTipoF = p[0]
+            print("checando tipo funcion",self.auxTipoF )
+            
         pass
 
 if __name__ == '__main__':

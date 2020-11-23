@@ -1,73 +1,55 @@
 programa p : 
-void module fun(int e){
-    var int : t;
-    if(e < 8) then {
-        e = 9;
-    };
-    e = 9+8;
-};
-var int : tglobal;
 int module fun(int e){
-    var int : t;
+    var char : ch;
+    var int  : in;
+    var float : fl;
+    var float : fl2;
+    e = 1;
     if(e < 8) then {
-        e = 9;
+        e = 9 + e;
     };
-    e = 9+8;
-    return(54)
-};
-var int : tfglobal;
-void module fun2(float f){
-    var int : t;
-    if(f < 8) then {
-        f = 9;
-    }else{
-        var int : o;
-    };
-    if(t < 23)then
-    {
-        t = 6.3+5;
-    };
-    e = 9+8;
-    var float: f2;
+    e = 8 + e;
+    in =99;
+    write(in);
+    return(e)
 };
 main {
-    fun(2+6 *5);
-    var int : y;
-    var float : fm;    var float : we;
-    y = 9+5;
-    x=56+8;
-    write("1");
-    color(red);
-    arc(2,5);
-    circle(4);
-    line(100,200);
-    read(54);
-    f = "asdasd";
-    read("sadasd");
-}
-
-write("hgfhg");
-
-    var int : w;
-    while( w<= 5) do 
-    {   
-        write("la w es: ");
-        write(w);
-        w = w+1;
-    };
-
-    var int :  f;
-    for f = 1 to 4 do
+    var float : i ;
+    var float : e ;
+    e = (9.0 + 5) + (5 * 2);
+    i = e;
+    write(e);
+   
+    var int :  f1;
+    var int : f2;
+    var int : f3;
+    var int : x;
+    f3 = 1;
+    f2 =1;
+    f1 =0;
+    var int : fib;
+    fib = 3;
+    for x = 1 to fib do
     {
+        f1 = f1 + f2;
+        write(f1);
+        f2 = f2 + f1;
+        write(f2);
         
-        write("entre al for");
-        write(f);
-        f = f +1;
+
+        if( x == fib - 3) then
+            {
+                x = fib ;
+            }else{
+                x = x + 1;
+            };
+
+        
     };
+
+    write("resultado :");
+    write(f2);
+   
+    i = e + 5;
     write(i);
-    if( e < 3)then{
-        i = 34.0;
-        write("si entre");
-    }else{
-        write("entre al else");
-    };
+}

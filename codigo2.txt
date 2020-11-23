@@ -1,29 +1,28 @@
 programa p : 
-int module fun(int e){
-    var int : t;
-    if(e < 8) then {
-        e = 9;
-    };
-    e = 9+8;
-    return(54)
+int module fun(int e, int j ){
+    write("imprimi i:");
+    var int: i;
+    i = j + e;
+    write(i);
+    return(i)
 };
 main {
-    var float : i ;
-    var float : e ;
-    e = (9.0 + 5) + (5 * 2);
-    i = e;
-    write(e);
-   
-    var int :  f;
+    var int : f1;
+    var int : f2;
+    var int : f3;
+    var int : x;
     
-    for f = 1 to 4 do
-    {
-        
-        write("entre al for");
-        write(f);
-        f = f +1;
-    };
-    fun(2);
-    i = e + 5;
-    write(i);
+    f3 = 1;
+    f2 = 54;
+    f1 = 0;
+    var int : fib ;
+    fib = 3;
+   
+    f3 = fun(f2, 9) ;
+    
+    call fun(12,3);
+
+    write(" y acontinuacion la funcion");
+    write(f3);
+    
 }
