@@ -225,6 +225,13 @@ class  tablas():
     gVBool= 14000
     gVChar = 15000
 
+    def agregarArr(self,  tipo, valor,cantidad):
+        w =1
+        while(w<=cantidad):
+            self.agregarV(w,tipo, 0)
+            w+=1
+
+
     def agregarV(self, nombre, tipo, valor):
         #print("scope", scope)
         self.j += 1

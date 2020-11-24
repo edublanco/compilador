@@ -4,20 +4,21 @@ from TablaFV  import *
 from Cuadruplos  import *
 from CuboSemantico import cubo
 from MaquinaVT  import *
+from turtle import *
 
 class CalcLexer(Lexer):
     # Set of token names.   This is always required
     tokens = {  CTEI, CTEF,  ID, CSTRING, MAS, MENOS, INT, 
                 ASIGNACION, IF, ELSE,
                 RELOP, MUL, DIV, PROGRAMA,
-                CHAR, FLOAT, VAR, CALL,
-                MODULE, VOID, RETURN, PALETA,FOR, WHILE,
+                CHAR, FLOAT, VAR, CALL,SPEED,
+                MODULE, VOID, RETURN, PALETA,FOR, WHILE,DONE,
                 MAIN, TO, DO, WRITE, READ, SIZE, COLOR, CLEAR,
-                PENDOWN, PENUP, ARC, CIRCLE, POINT, LINE, THEN, LETRA}
+                PENDOWN,ARRAY, PENUP, ARC, CIRCLE, POINT, LINE, THEN, LETRA}
 
     ignore =' \t'
 
-    literals = { ';', ':', '(', ')', '{', '}',','}
+    literals = { ';', ':', '(', ')', '{', '}',',', '[',']'}
 
     CTEF    = r'([0-9]+)(\.)([0-9]+)?'
     CTEI    = r'[0-9]+'
@@ -39,10 +40,13 @@ class CalcLexer(Lexer):
     ID['programa'] = PROGRAMA
     ID['char'] = CHAR
     ID['var'] = VAR
+    ID['array'] = ARRAY
     ID['module'] = MODULE
     ID['void'] = VOID
     ID['return'] = RETURN
     ID['red'] = PALETA
+    ID['black'] = PALETA
+    ID['purple'] = PALETA
     ID['blue'] = PALETA
     ID['green'] = PALETA
     ID['pink'] = PALETA
@@ -55,6 +59,8 @@ class CalcLexer(Lexer):
     ID['size'] = SIZE
     ID['color'] = COLOR
     ID['clear'] = CLEAR
+    ID['done'] = DONE
+    ID['speed'] = SPEED
     ID['pendown'] = PENDOWN
     ID['penup'] = PENUP
     ID['arc'] = ARC
@@ -113,7 +119,7 @@ class CalcParser(Parser):
         TablaFV.scope = "global"
        
     #function---------------------------------------------------
-    @_('fun', 'funVoid', 'size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
+    @_('fun', 'funVoid','speed', 'size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
     def function(self, p):
         pass 
     
@@ -205,7 +211,7 @@ class CalcParser(Parser):
         pass
 
     #ESTATUTOS-------------------------------------------------
-    @_('estatutos1', 'estatutos2', 'estatutos3', 'estatutos4', 'estatutos5','estatutos6','estatutos7', 'estatutos8','estatutos9','')
+    @_('estatutos1', 'estatutos2', 'estatutos3', 'estatutos4', 'estatutos5','estatutos6','estatutos7', 'estatutos8','estatutos9','estatutos10','')
     def estatutos(self,p):
         pass
 
@@ -245,9 +251,12 @@ class CalcParser(Parser):
     @_('var ";" estatutos')
     def estatutos9(self,p):
         pass
-
+    
+    @_('arrays ";" estatutos')
+    def estatutos10(self,p):
+        pass
     #funciones especiales --------------------------------------------
-    @_('size', 'color','clear', 'pendown', 'penup', 'arc', 'circle', 'point', 'line')
+    @_('size', 'color','clear','speed', 'done','pendown', 'penup', 'arc', 'circle', 'point', 'line')
     def especiales(self,p):
         pass
 
@@ -255,23 +264,35 @@ class CalcParser(Parser):
     #asignacion-----------------------------------------------
     #auxValor = '' # es para asignar el id, char o str----- falta prpgramar
     #--------------!!!!!!-------------------------------
-    @_('ID ASIGNACION exp end ', 'ID ASIGNACION asignacion2') # CHECAR CON STRINGS
-    #@_('ID ASIGNACION asignacion2') 
+    #@_('ID ASIGNACION exp end ', ) # CHECAR CON STRINGS
+    @_('ID ASIGNACION exp end ', 'asignArr', ' asignacion2') 
     def asignacion(self,p):
         if(tablas.checa(p[0])):
-            #tablas.agregarValor(p[0], cuad.resultado)
             auxM = tablas.buscarM(p[0]) 
             cuad.agregarCuadAsign(auxM,cuad.resultado, '=') 
         else: 
             print("la variable no esta")
         pass
-    
-    #@_('asignacion5 ','asignacion4', 'asignacion3 ') # CHECAR CON STRINGS
+
+    @_('asignArr2', 'asignArr3') # CHECAR CON STRINGS
+    def asignArr(self,p):
+        pass
+
+    @_('callArrays ASIGNACION exp end ') # CHECAR CON STRINGS
+    def asignArr2(self,p):
+        cuad.agregarCuadAsign(cuad.memArrays.pop(),cuad.resultado, '=') 
+        pass
+    @_('callArrays ASIGNACION asignacion2') # CHECAR CON STRINGS
+    def asignArr3(self,p):
+        arr2 =cuad.memArrays.pop()
+        arr1 =cuad.memArrays.pop()
+        cuad.agregarCuadAsign(arr1,arr2, '=') 
+        pass
+
     @_('asignacion5 ','asignacion4') #, 'callVoid'
     def asignacion2(self,p):
         pass
-        #tablas.agregarC(p[0], 'char')
-        #cuad.resultado = tablas.m
+
     @_('CSTRING ') # CHECAR CON STRINGS
     def asignacion5(self,p):
         tablas.agregarC(p[0], 'string')
@@ -335,35 +356,13 @@ class CalcParser(Parser):
     
     
     #read -------------------------------------------------------
-    auxRead = 0
-    @_('READ "("  ")" ', 'READ "(" read4  ")" ')# checar que onda
+   
+    @_( 'READ "("  ")"  ')# checar que onda
     def read(self,p):
-        cuad.agregarCuadF1( cuad.resultado, p[0])
+        cuad.agregarCuadF0(  p[0])
         pass
 
-    @_('read2','read3', 'read5' )# checar que onda
-    def read4(self,p):
-        #self.auxRead = p[0]
-        #cuad.resultado = p[0]
-        pass
-
-    @_('exp end' )# checar que onda
-    def read3(self,p):
-        pass
-
-    @_('LETRA') # CHECAR CON STRINGS
-    def read5(self,p):
-        tablas.agregarC(p[0], 'char')
-        cuad.resultado = tablas.m
-        pass
-
-    @_(' CSTRING' )# checar que onda
-    def read2(self,p):
-        #self.auxRead = p[0]
-        tablas.agregarC(p[0], 'string')
-        cuad.resultado = tablas.m
-        pass
-
+    
     #write-------------------------------------------------------
     @_('WRITE "(" write2 ")" ','WRITE "(" write3 ")" ' ,'WRITE "(" write4 ")" ')
     def write(self,p):
@@ -481,36 +480,41 @@ class CalcParser(Parser):
     #CLEAR---------------------------------------------------
     @_('CLEAR "(" ")"')
     def clear(self,p):
-        cuad.agregarCuadF1(  p[0])
+        cuad.agregarCuadF0(  p[0])
         pass
     
     #pendow------------------------------------------------
     @_('PENDOWN "(" ")"')
     def pendown(self,p):
-        cuad.agregarCuadF0( p[1])
+        cuad.agregarCuadF0( p[0])
         pass
     
     #PENUP----------------------------------------------
     @_('PENUP "(" ")"')
     def penup(self,p):
-        cuad.agregarCuadF0( p[1])
+        cuad.agregarCuadF0( p[0])
+        pass
+    
+    #DONE----------------------------------------------
+    @_('DONE "(" ")"')
+    def done(self,p):
+        cuad.agregarCuadF0( p[0])
+        pass
+    #DONE----------------------------------------------
+    @_('SPEED "(" exp end ")"')
+    def speed(self,p):
+        cuad.agregarCuadF1(cuad.resultado,  p[0])
         pass
 
     #ARC----------------------------------------------------
-    arc1=0
-    arc2=0
-    @_('auxArc ARC "(" exp end "," exp end ")"')
+    arc1=0# ya no se usan
+    arc2=0# ya no se usan
+    @_('ARC "(" exp end ")" ')
     def arc(self,p):
-        cuad.agregarCuadF2(self.arc1, self.arc2, p[1])
-        self.arc1 = 0
-        self.arc2 = 0
+        cuad.agregarCuadF1(cuad.resultado, p[0])
         pass
 
-    @_('')
-    def auxArc(self,p):
-        self.arc1 = 0
-        self.arc2 = 0
-        pass
+   
 
     #CIRCLE-------------------------------------------------
     @_('CIRCLE "(" exp end ")"')
@@ -572,6 +576,47 @@ class CalcParser(Parser):
         #self.rtr =  cuad.resultado
         pass
 
+    #arrays ------------------------------------------------
+    auxTipoArr = ''
+    @_('arrays1', 'arrays2' )
+    def arrays(self,p):
+        pass
+
+    @_('VAR tipo pnArr ARRAY ID "[" exp end "]" ' )
+    def arrays1(self,p):
+        
+        tablas.agregarV(p.ID,self.auxTipoArr, int(tablas.extraerValorC(tablas.m)))
+        tablas.agregarArr(self.auxTipoArr, 0, int(tablas.extraerValorC(tablas.m)))
+        print("en el cuad res es:", int(tablas.extraerValorC(tablas.m)))
+        pass
+
+    auxArr1Par = ''
+    @_('VAR tipo pnArr ARRAY ID "[" exp end "]" pnArrPar "[" exp end "]" ')
+    def arrays2(self,p):
+        print("en el cuad res es:", cuad.resultado)
+        tablas.agregarV(p.ID,self.auxTipoArr, int(tablas.extraerValorC(tablas.m)) * self.auxArr1Par)
+        tablas.agregarArr(self.auxTipoArr, 0, int(tablas.extraerValorC(tablas.m)) * self.auxArr1Par)
+        pass
+    
+    @_('')
+    def pnArr(self,p):
+        self.auxTipoArr = self.auxTipo
+        pass
+
+    @_('')
+    def pnArrPar(self,p):
+        self.auxArr1Par =  int(tablas.extraerValorC(tablas.m))
+        pass
+
+
+    #callarrays ------------------------------------------------
+ 
+    @_('ID "[" exp  end  "]" ')
+    def callArrays(self,p):
+        cuad.agregarCuadArr( p[0], cuad.resultado, 'ver')
+        cuad.agregarCuadArr(p[0], cuad.resultado ,'memInterna')
+        pass  
+
 
     #EXP---------------------------------------------------
     @_('termino exp2 ')
@@ -584,16 +629,11 @@ class CalcParser(Parser):
         cuad.agregaOp('end')
         pass
 
-    @_('exp3 termino exp2','exp4 termino exp2', '')
+    @_('exp3 termino exp2','exp4 termino exp2','')
     def exp2(self,p):
-        #si el anterior no es  *, /, + , * guardar en el stack, si si es hacer la operacion 
-        #y guardar el resultado 
+
         pass
 
-    #@_(' termino  exp3 exp2',' termino  exp4 exp2', '')
-    #def expCV(self,p):
-        #si el anterior no es  *, /, + , * guardar en el stack, si si es hacer la operacion 
-        #y guardar el resultado 
     @_('MAS')
     def exp3(self,p):
         cuad.agregaOp("+")
@@ -651,10 +691,6 @@ class CalcParser(Parser):
     
     auxp = 1
     auxCall = ''
-
-
-
-
     @_('CALL pnCall "(" exp end pnParam callVoid2   ")" ', ' CALL  pnCall "("  ")" ')
     def callVoid(self,p):
         cuad.agregarCuadCall('gosub', self.auxCall, 0)
@@ -713,7 +749,7 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
 
-    @_('varnum5', 'varnum4')
+    @_('varnum5', 'varnum4','varnum6')
     def varnum3(self,p):
         pass
 
@@ -721,6 +757,21 @@ class CalcParser(Parser):
     def varnum4(self,p):
         self.rtr =  p[0]
         tablas.agregarC(p[0], 'int')
+        cuad.agregaCons(TablaFV.cInt)
+        if(self.arc1 == 0):
+            self.arc1 =  tablas.m
+        elif(self.arc2 == 0):
+            self.arc2 =  tablas.m
+        if(self.line1 == 0):
+            self.line1 =  tablas.m
+        elif(self.line2 == 0):
+            self.line2 =  tablas.m
+
+        pass
+
+    @_('callArrays ')
+    def varnum6(self,p):
+        tablas.agregarC(cuad.memArrays.pop(), 'int')
         cuad.agregaCons(TablaFV.cInt)
         if(self.arc1 == 0):
             self.arc1 =  tablas.m
@@ -829,6 +880,7 @@ if __name__ == '__main__':
     archivo2.close()
 
     maquina.procesos()
+    
         
 
     

@@ -1,6 +1,6 @@
 from TablaFV  import * 
 from Cuadruplos  import *
-
+from turtle import *
 class maquina():
     cuad = cuad()
     tablas = tablas()
@@ -9,6 +9,7 @@ class maquina():
     varsMF = {}
     varLocales = {}
     tempsLocales = {}
+    dirArr = {}
     isFun = False
     par = 1
 
@@ -20,6 +21,8 @@ class maquina():
     # MF = MEMORIA FINAL
 
     def iof(self, valor):
+        
+
         if( valor >= 5000 and valor < 6000  ):
             valor = float(tablas.extraerValorC(tablas,valor)) 
         elif(valor >= 9000 and valor < 10000):
@@ -28,9 +31,20 @@ class maquina():
             else:
                 valor = float(self.tempsMF[valor]) 
         elif(valor >= 12000 and valor < 13000):
+            
             valor = float(tablas.extraerValorMV(tablas,valor)) 
         elif( valor >= 6000 and valor < 7000 ):
-            valor = int(tablas.extraerValorC(tablas,valor))
+            valorAux =  valor
+            valor = tablas.extraerValorC(tablas,valor)
+            
+            if(valor[0:4] == 'arr-'):
+                valor =  int(self.dirArr[valor])
+                print("---- antes el valor de dirArr es:", valor)
+                valor = self.iof(valor)
+                print("---- despues  el valor de dirArr es:", valor)
+            else:
+                valor = valorAux
+                valor = int(tablas.extraerValorC(tablas,valor))
         elif(valor >= 1000 and valor < 2000):
             w = 1
             while(w <= len(self.varLocales)):
@@ -58,6 +72,11 @@ class maquina():
                     print("entre al if del 2000", valor)
                 w +=1
             valor = int(valor)
+        elif(valor[0:4] == 'arr-'):
+            valor =  int(self.dirArr[valor])
+            print("---- el valor de dirArr es:", valor)
+        else:
+            print("---- el valor[4] es:", valor[0:4])
         return valor
 
 
@@ -135,6 +154,18 @@ class maquina():
 
             elif(op == '='):
                 tempM = izq
+                #convertir res string y checar si es string
+                if (isinstance(res, str)) :
+                    if(res[0:4] == 'arr-'):
+                        res =  int(self.dirArr[res])
+                        print("---- el res de dirArr es:", res)
+                        print("---- el izq de dirArr es:", izq)
+                        
+                if (isinstance(izq, str)) :
+                    if(res[0:4] == 'arr-'):
+                        res =  int(self.dirArr[res])
+                        print("---- antes el res de dirArr es:", res)
+                        print("---- despues  el res de dirArr es:", res)
                 #aqui extraemos el valor
                 if(izq >= 5000 and izq < 9000):
                     izq = tablas.extraerValorC(tablas,izq)
@@ -282,8 +313,25 @@ class maquina():
                     self.tempsMF[res] = resultado 
 
             elif(op == 'write'):
+
+
                 if((res >= 5000 and res < 9000) or (res >= 16000 and res < 17000)):
-                    print(tablas.extraerValorC(tablas,res))
+                    print("---- res en write es:", res)
+                    auxRes = res
+
+                    res = tablas.extraerValorC(tablas,res)
+                    if(isinstance(res,str)):
+                        
+                        if(res[0:4] == 'arr-'):
+                            res =  int(self.dirArr[res])
+                            print(tablas.extraerValorMV(tablas,res))
+                        else:
+                            res = auxRes
+                            print(tablas.extraerValorC(tablas,res))    
+                    else:
+                        res = auxRes
+                        print(tablas.extraerValorC(tablas,res))
+        
                 elif(res >= 9000 and res < 12000):
                     if(self.isFun):
                         print(self.tempsLocales[res])
@@ -302,6 +350,8 @@ class maquina():
             
             #elif(op == 'era'):
             elif(op =='era'):
+
+                
                 self.isFun = True
                 floats = tablas.tablaEra[izq][1000] 
                 ints = tablas.tablaEra[izq][2000] 
@@ -352,6 +402,9 @@ class maquina():
 
                 #--------------------------------
                 funcion = tablas.buscarM(tablas,self.varLocales[1]['scope'])  
+                
+                if(funcion == ''): # para los casos void
+                    funcion =0
                 tempM = res
             
                 if(res >= 5000 and res < 9000):
@@ -370,6 +423,8 @@ class maquina():
                             res = self.varLocales[w]['valor']
                         w +=1
                 #-----------------------------------------------------
+                print("la funcion es:", funcion)
+                print("tempM es: ", tempM)
                 if((funcion >= 12000 and funcion < 13000) and ((tempM >= 1000 and tempM < 2000) or(tempM >= 9000 and tempM < 10000) or (tempM >= 12000 and tempM < 13000)  or (tempM >= 5000 and tempM < 6000) )):# float 
                     tablas.agregarValorMV(tablas, funcion, res)
                 elif((funcion >= 13000 and funcion < 14000) and ((tempM >= 2000 and tempM < 3000) or(tempM >= 10000 and tempM < 11000) or (tempM >= 13000 and tempM < 14000)  or (tempM >= 6000 and tempM < 7000) )):# int
@@ -387,6 +442,19 @@ class maquina():
                 self.varLocales[self.par]['valor'] = izq
                 self.par += 1
                 pass
+
+            elif(op == 'ver'):
+                izq = self.iof(izq)
+                if(izq > res):
+                    print("ERROR: El valor se sale de rango")
+                    break
+
+            elif(op == '++'):
+                der = self.iof(der)
+                self.dirArr[res] = int(izq) + der
+                print("------------------------")
+                print(self.dirArr[res])
+                print("------------------------")
 
             elif(op == 'gotoT'):
                 i = res -1
@@ -412,9 +480,68 @@ class maquina():
                 elif(self.tempsMF[izq] == 0):
                     i = int(res) -1
                 #break
-            i +=1    
+               
 
+            elif(op == 'size'):
+                res = self.iof(res)
+                pensize(res)
+                pass
+
+            elif(op == 'color'):
+                color(res)
+                
+
+            elif(op == 'clear'):
+                clear()
+                pass
+            elif(op == 'pendown'):
+                pendown()
+                pass
+
+            elif(op == 'penup'):
+                penup()
+                pass
+
+            elif(op == 'done'):
+                Screen().exitonclick()
+                pass
+            
+            elif(op == 'speed'):
+                res = self.iof(res)
+                speed(res)
+                pass
+            
+            elif(op == 'arc'):
+                res = self.iof(res)
+                #der = self.iof(der)
+                circle(res, 180)
+                pass
+            
+            elif(op == 'circle'):
+                res = self.iof(res)
+                circle(res)
+                pass
+            
+            elif(op == 'point'):
+                res = self.iof(res)
+                dot(res)
+                pass
+
+            elif(op == 'line'):
+                
+                res = self.iof(res)
+                der = self.iof(der)
+                setpos(der,res)
+                pass
+
+            elif(op == 'read'):
+                r =input()
+                tablas.agregarC(tablas,r, 'string')
+          
+                pass
+            i +=1 
         print(tablas.tablaMV)
+       
 
 
 

@@ -93,9 +93,9 @@ class  cuad():
             self.agregarCuad(self.opIzq, self.opDer, self.operador)
             self.agregaOp('end') 
 
+    
+
     def agregarCuad(self, opIzq, opDer, operando):  
-
-
         opeNuevo = 0
         tipoFinal = ''
         auxIzq = opIzq
@@ -247,7 +247,7 @@ class  cuad():
 
     def agregarCuadF0(self,  funcion):
         opeNuevo = 0
-        opeNuevo = exp
+        
 
         self.tablaQ[self.i] = {
             'operando': funcion ,
@@ -256,7 +256,7 @@ class  cuad():
             'opNuevo': 0 
             }
 
-        self.resultado = opeNuevo
+       
       
         self.i += 1
 
@@ -271,7 +271,7 @@ class  cuad():
             'opNuevo': exp    
             }
 
-        self.resultado = opeNuevo
+        #self.resultado = opeNuevo
   
         self.i += 1
 
@@ -286,7 +286,7 @@ class  cuad():
             'opNuevo': exp2    
             }
 
-        self.resultado = opeNuevo
+        #self.resultado = opeNuevo
     
         self.i += 1
 
@@ -496,7 +496,45 @@ class  cuad():
     def agregarCuadFun(self,nombre):
   
         self.direF[nombre] = self.i
-                
+
+    memArrays = [] 
+    arr = 17001
+    def agregarCuadArr(self, opIzq, opDer, operando):
+        operando
+
+        if(operando == 'ver'):
+            #tengo el id buscar valor
+            opIzq = tablas.extraerValor(tablas,opIzq)
+            self.tablaQ[self.i] = {
+            'operando': operando ,
+            'opIzq':opDer, 
+            'opDer': 0, 
+            'opNuevo': opIzq    
+            }
+            #self.sJumps.append(self.i)
+      
+            self.i += 1
+        elif(operando == 'memInterna'):
+            #tengo el id buscar memoria
+            opIzq = tablas.buscarM(tablas,opIzq)
+              #opIzq = tablas.extraerValor(tablas,opIzq)
+            
+            self.tablaQ[self.i] = {
+            'operando': '++' ,
+            'opIzq':opIzq , 
+            'opDer': opDer, 
+            
+            'opNuevo':"arr-" + str(self.arr) 
+            }
+            
+            self.memArrays.append("arr-" + str(self.arr) )
+            self.arr +=1
+            #self.sJumps.append(self.i)
+            #self.resultado = opeNuevo
+            self.i += 1
+        
+
+
     def agregarCuadCall(self,  goto, nombre, valor):
         operando = goto
    

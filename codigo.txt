@@ -1,55 +1,65 @@
 programa p : 
-int module fun(int e){
-    var char : ch;
-    var int  : in;
-    var float : fl;
-    var float : fl2;
-    e = 1;
-    if(e < 8) then {
-        e = 9 + e;
-    };
-    e = 8 + e;
-    in =99;
-    write(in);
-    return(e)
-};
-main {
-    var float : i ;
-    var float : e ;
-    e = (9.0 + 5) + (5 * 2);
-    i = e;
+void module fun(int e){
     write(e);
-   
-    var int :  f1;
-    var int : f2;
-    var int : f3;
-    var int : x;
-    f3 = 1;
-    f2 =1;
-    f1 =0;
-    var int : fib;
-    fib = 3;
-    for x = 1 to fib do
-    {
-        f1 = f1 + f2;
-        write(f1);
-        f2 = f2 + f1;
-        write(f2);
+    if( e <= 2) then {
+        write("si jalo");
+    }else{
         
-
-        if( x == fib - 3) then
-            {
-                x = fib ;
-            }else{
-                x = x + 1;
-            };
-
-        
+        write("hola");
     };
+  
+};
 
-    write("resultado :");
-    write(f2);
+main {
+    var int  :s ;
+    call fun(5.0);
+    s  = 6+6;
+    speed(10);
+    write(s);
+    size(5);
+    circle(50);
+    point(20);
+    clear();
+    color(yellow);
+    color(purple);
+    s =100;
+    var int:  x;
+    pendown();
+    for x = 1 to 2 do {
+        s = s +20;
+        circle(s);
+        x = x +1;
+    };
+    penup();
+    line(100,100);
+    pendown();
+    color(blue);
+    s =100;
+    x =1;
+    for x = 1 to 2 do {
+        s = s +20;
+        circle(s);
+        x = x +1;
+    };
+    penup();
+    s= 0-100;
+    line(s,100);
+    pendown();
+    color(red);
+    s =100;
+    x =1;
+    for x = 1 to 2 do {
+        s = s +20;
+        circle(s);
+        x = x +1;
+    };
    
-    i = e + 5;
-    write(i);
+    
+    penup();
+    line(150,260);
+    pendown();
+    done();
+    var int array j[54];
+    read();
+    j[4] = k[24];
 }
