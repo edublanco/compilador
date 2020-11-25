@@ -708,10 +708,10 @@ class CalcParser(Parser):
     #def varnum8(self,p):
     #    pass
 
-    @_(' "{" callArrays  "}"' )
+    @_('  callArrays ' )
     def varnum6(self,p):
         tablas.agregarC(cuad.memArrays.pop(), 'int')
-        print("call arrys =====", TablaFV.cInt)
+      
         cuad.agregaCons(TablaFV.cInt)
         if(self.arc1 == 0):
             self.arc1 =  tablas.m
@@ -724,7 +724,7 @@ class CalcParser(Parser):
         pass
 
     #VARNUM-------------------------------------------------
-    @_('varnum2', 'varnum3','callFun')# callVoid
+    @_('varnum2', 'varnum3')# callVoid
     def varnum(self,p):
         pass
     
@@ -733,21 +733,26 @@ class CalcParser(Parser):
     @_('CALL pnCall "(" exp end pnParam callVoid2   ")" ', ' CALL  pnCall "("  ")" ')
     def callVoid(self,p):
         cuad.agregarCuadCall('gosub', self.auxCall, 0)
-        
         self.auxp = 1
         pass
 
     @_(' pnCall "(" exp end pnParam callVoid2 ")"  ', 'pnCall "("  ")" ')
     def callFun(self,p):
+        #experimento
+        #--------
+      
+        #--------
         cuad.agregarCuadCall('gosub', self.auxCall, 0)
-
         val = tablas.buscarM(self.auxCall)
         val = tablas.extraerValorCM(val)
         print('el valor de callvoi',val )
         self.rtr =  val
-
         cuad.agregaCons(val)
+        #experimento
+        tablas.agregarC(val, 'int')
+        #--------
         self.auxp = 1
+      
         pass
 
     @_('ID') #<<<<---------------  checar
@@ -788,8 +793,7 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
 
-    #@_('varnum5', 'varnum4','varnum6')
-    @_('varnum5', 'varnum4', 'varnum6')
+    @_('varnum5', 'varnum4', 'varnum6', 'callFun')
     def varnum3(self,p):
         pass
 
@@ -807,10 +811,7 @@ class CalcParser(Parser):
             self.line1 =  tablas.m
         elif(self.line2 == 0):
             self.line2 =  tablas.m
-
         pass
-
-    
 
     @_('CTEF')
     def varnum5(self,p):
