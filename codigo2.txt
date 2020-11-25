@@ -3,18 +3,15 @@ programa p :
 
 
 main {
-    var int : ar;
-    ar = 2;
-    var int : ar2;
-    ar2 = 9;
     var int array j[4];
-    var int array k[4];
-    
-    k[1] = 35;
-    j[1] = 35;
+    var int : h;
 
-    j[2] =  32 ;
+    j[3] =  32 ;
+    h = 2+ {j[3]}+2;
 
-    write("buenas");
-    write(56);
+    write(h);
+   
+
+
+    write(h);
 }

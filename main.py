@@ -669,10 +669,12 @@ class CalcParser(Parser):
         tablas.agregarV(p.ID,self.auxTipo, 0)
         
         pass
+    
 
     #factor --------------------------------------------------
     #@_('"(" expresion ")" ','MAS varnum',  'MENOS varnum', 'varnum')
-    @_('factor2 exp factor3', 'varnum' , '')
+    #@_('factor2 exp end factor3', 'varnum' , 'especialCalls', '')
+    @_('factor2 exp end factor3', 'varnum' '')
     def factor(self,p):
         pass
 
@@ -683,6 +685,43 @@ class CalcParser(Parser):
     @_(' ")" ')
     def factor3(self,p):
         cuad.agregaOp(")")
+    #especiales (arrays y calls) --------------------------------
+    #@_('especialCalls2 varnum7 especialCalls3','')
+    #def especialCalls(self,p):
+    #    pass
+
+    #@_(' "{" ')
+    #def especialCalls2(self,p):
+    #    cuad.agregaOp("{")
+    #    pass
+    
+    #@_(' "}" ')
+    #def especialCalls3(self,p):
+    #    cuad.agregaOp("}")
+    #    pass
+
+    #@_('varnum6', 'varnum8')
+    #def varnum7(self,p):
+    #    pass
+
+    #@_('callFun' )
+    #def varnum8(self,p):
+    #    pass
+
+    @_(' "{" callArrays  "}"' )
+    def varnum6(self,p):
+        tablas.agregarC(cuad.memArrays.pop(), 'int')
+        print("call arrys =====", TablaFV.cInt)
+        cuad.agregaCons(TablaFV.cInt)
+        if(self.arc1 == 0):
+            self.arc1 =  tablas.m
+        elif(self.arc2 == 0):
+            self.arc2 =  tablas.m
+        if(self.line1 == 0):
+            self.line1 =  tablas.m
+        elif(self.line2 == 0):
+            self.line2 =  tablas.m
+        pass
 
     #VARNUM-------------------------------------------------
     @_('varnum2', 'varnum3','callFun')# callVoid
@@ -749,7 +788,8 @@ class CalcParser(Parser):
             print("la variable no esta")
         pass
 
-    @_('varnum5', 'varnum4','varnum6')
+    #@_('varnum5', 'varnum4','varnum6')
+    @_('varnum5', 'varnum4', 'varnum6')
     def varnum3(self,p):
         pass
 
@@ -758,6 +798,7 @@ class CalcParser(Parser):
         self.rtr =  p[0]
         tablas.agregarC(p[0], 'int')
         cuad.agregaCons(TablaFV.cInt)
+        print("en ctei estoy poniendo ===",TablaFV.cInt)
         if(self.arc1 == 0):
             self.arc1 =  tablas.m
         elif(self.arc2 == 0):
@@ -769,20 +810,7 @@ class CalcParser(Parser):
 
         pass
 
-    @_('callArrays ')
-    def varnum6(self,p):
-        tablas.agregarC(cuad.memArrays.pop(), 'int')
-        cuad.agregaCons(TablaFV.cInt)
-        if(self.arc1 == 0):
-            self.arc1 =  tablas.m
-        elif(self.arc2 == 0):
-            self.arc2 =  tablas.m
-        if(self.line1 == 0):
-            self.line1 =  tablas.m
-        elif(self.line2 == 0):
-            self.line2 =  tablas.m
-
-        pass
+    
 
     @_('CTEF')
     def varnum5(self,p):

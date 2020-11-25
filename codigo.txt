@@ -61,5 +61,5 @@ main {
     done();
     var int array j[54];
     read();
-    j[4] = k[24];
+    j[4] = k[24] + 5;
 }

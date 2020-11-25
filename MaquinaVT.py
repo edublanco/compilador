@@ -156,19 +156,28 @@ class maquina():
                 tempM = izq
                 #convertir res string y checar si es string
                 if (isinstance(res, str)) :
+                    # si viene por el lado al que se lo voy a asignar
                     if(res[0:4] == 'arr-'):
                         res =  int(self.dirArr[res])
-                        print("---- el res de dirArr es:", res)
-                        print("---- el izq de dirArr es:", izq)
+                        
+                        
                         
                 if (isinstance(izq, str)) :
-                    if(res[0:4] == 'arr-'):
-                        res =  int(self.dirArr[res])
-                        print("---- antes el res de dirArr es:", res)
-                        print("---- despues  el res de dirArr es:", res)
+                    if(izq[0:4] == 'arr-'):
+                        izq =  int(self.dirArr[res])
+                        izq = self.iof(izq)
                 #aqui extraemos el valor
+
+
                 if(izq >= 5000 and izq < 9000):
                     izq = tablas.extraerValorC(tablas,izq)
+                    #  esto es nuevo =============== arrs
+                    if (isinstance(izq, str)) :
+                        if(izq[0:4] == 'arr-'):
+                            izq =  int(self.dirArr[izq])
+                            izq = self.iof(izq)
+                            print("en la parte de igaulacion izq",izq)
+
                 elif(izq >= 9000 and izq < 12000):
                     if(self.isFun):
                         izq = int(self.tempsLocales[izq])
